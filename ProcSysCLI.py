@@ -1,10 +1,10 @@
 import cmd
-import ProcSys
+import System as System
 import Users
 
 class ProcSysCLI(cmd.Cmd):
     intro = "----Procurement System Prototype CLI----"
-    sys = ProcSys.ProcurementSystem() #Initialize system
+    sys = System.ProcurementSystem() #Initialize system
     prompt = f"({sys.active_user.type}) "
 
 
@@ -53,8 +53,7 @@ class ProcSysCLI(cmd.Cmd):
         if (self.sys.number_of_users == 0):
             print("No users in system\n")
             return
-        for user in self.sys.user_list:
-            print(f"Type: {user.type}, User: {user.name}")
+        print(self.sys.GetListOfUsers())
     
 
     '''Helper function: makes a new user and adds it to the system'''

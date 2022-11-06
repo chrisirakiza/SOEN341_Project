@@ -20,3 +20,9 @@ class ProcurementSystem:
                 return True
         return False
     
+    def GetListOfUsers(self):
+        list = ""
+        for user in self.user_list:
+            list += f"ID: {user.GetID()}, Name: {user.GetName()}, Type: {user.GetType()}\n"
+        return list
+    
