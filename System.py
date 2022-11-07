@@ -1,28 +1,25 @@
 import Users
+import Database
 
 class ProcurementSystem:
-    def __init__(self):
-        self.user_list = []
-        self.number_of_users = 0
+    def __init__(self) -> None:
+        self.userDB = Database.UserDatabase()
+
         admin_user = Users.Admin('Admin')
-        self.AddUser(admin_user)
+        self.userDB.AddUser(admin_user)
         self.active_user = admin_user
     
-    def AddUser(self, user):
-        self.user_list.append(user)
-        self.number_of_users += 1
+    def SwitchActiveUser(self, userID: str) -> bool:
+        user = self.userDB.GetUserByID(userID)
+        if (user == None):
+            return False
+        self.active_user = user
         return True
     
-    def SwitchActiveUser(self, name):
-        for user in self.user_list:
-            if user.name == name:
-                self.active_user = user
-                return True
-        return False
-    
-    def GetListOfUsers(self):
+    def GetListOfUsers(self) -> str:
         list = ""
-        for user in self.user_list:
+        userList = self.userDB.GetAllUsers()
+        for user in userList:
             list += f"ID: {user.GetID()}, Name: {user.GetName()}, Type: {user.GetType()}\n"
         return list
     

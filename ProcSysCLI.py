@@ -50,7 +50,7 @@ class ProcSysCLI(cmd.Cmd):
 
     '''Helper function: prints the list of current users in the system'''
     def user_list(self):
-        if (self.sys.number_of_users == 0):
+        if (self.sys.userDB.GetNumberOfUsers() == 0):
             print("No users in system\n")
             return
         print(self.sys.GetListOfUsers())
@@ -59,11 +59,11 @@ class ProcSysCLI(cmd.Cmd):
     '''Helper function: makes a new user and adds it to the system'''
     def user_make(self, type, name):
         if (type == 'c'):
-            self.sys.AddUser(Users.Client(name))
+            self.sys.userDB.AddUser(Users.Client(name))
         if (type == 'm'):
-            self.sys.AddUser(Users.Manager(name))
+            self.sys.userDB.AddUser(Users.Manager(name))
         if (type == 's'):
-            self.sys.AddUser(Users.Supplier(name))
+            self.sys.userDB.AddUser(Users.Supplier(name))
     
     def do_login(self, arg):
         '''
