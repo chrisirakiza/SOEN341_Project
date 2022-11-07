@@ -1,11 +1,12 @@
 import cmd
 import System as System
 import Users
+import Permissions as perm
 
 class ProcSysCLI(cmd.Cmd):
     intro = "----Procurement System Prototype CLI----"
     sys = System.ProcurementSystem() #Initialize system
-    prompt = f"({sys.active_user.type}) "
+    prompt = f"({sys.active_user.GetType().name}) "
 
 
     def do_exit(self, arg):
@@ -15,10 +16,7 @@ class ProcSysCLI(cmd.Cmd):
 
     def do_test(self, arg):
         '''Test function, used for development purposes'''
-        print("Hello World!")
-        print(type(arg))
-        print(arg)
-
+        print(self.sys.CheckPermissions(perm.FunctionTypes.MAKE_USER))
 
     def do_user(self, arg):
         '''
@@ -59,21 +57,22 @@ class ProcSysCLI(cmd.Cmd):
     '''Helper function: makes a new user and adds it to the system'''
     def user_make(self, type, name):
         if (type == 'c'):
-            self.sys.userDB.AddUser(Users.Client(name))
+            self.sys.userDB.AddUser(Users.Client(name, 'password'))
         if (type == 'm'):
-            self.sys.userDB.AddUser(Users.Manager(name))
+            self.sys.userDB.AddUser(Users.Manager(name, 'password'))
         if (type == 's'):
-            self.sys.userDB.AddUser(Users.Supplier(name))
+            self.sys.userDB.AddUser(Users.Supplier(name, 'password'))
     
     def do_login(self, arg):
         '''
-        Usage: login <user-name>
+        Usage: login <user-name> <user-password>
         '''
-        if (self.sys.SwitchActiveUser(arg)):
+        params = arg.split()
+        if (self.sys.SwitchActiveUser(params[0], params[1])):
             print(f"Switched to user '{self.sys.active_user.name}'\n")
-            self.prompt = f"({self.sys.active_user.type}) "
+            self.prompt = f"({self.sys.active_user.GetType().name}) "
         else:
-            print(f"Unable to find user '{arg}' in system\n")
+            print(f"Invalid username or password\n")
 
 
 #Main program loop
