@@ -1,7 +1,28 @@
 import Users
 
+#################################################################################################
+# Class: Database
+# @members: N/A
+# @methods: N/A
+# 
+# This class instantiates the generic database object
+#
+#################################################################################################
+
 class Database:
     pass
+
+#################################################################################################
+# Class: UserDatabase (inherits from Database)
+# @members: users
+#           numUsers
+#
+# @methods: AddUser() - Adds a User object to the database
+# 
+# This class instantiates the User Database. It stores User objects.
+#
+#################################################################################################
+
 
 class UserDatabase(Database):
     def __init__(self) -> None:

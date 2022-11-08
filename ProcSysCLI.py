@@ -3,6 +3,22 @@ import System as System
 import Users
 import Permissions as perm
 
+##################################################################################################
+# Class: ProcSysCLI
+# @members: ProcurementSystem sys
+#
+# @methods: do_exit() - Exits System
+#           do_user() - CMD line feature that allows listing and generation of user accounts (for authorized users). 
+#                       Features the following:
+#                       user_list() - lists all users in database
+#                       user_make() - Creates a user account
+#           do_login() - CMD line feature that allows a user to login to their account
+#           
+# This class instantiates and CMD line interface for system users to interaxct with the system. 
+#
+#################################################################################################
+
+
 class ProcSysCLI(cmd.Cmd):
     intro = "----Procurement System Prototype CLI----"
     sys = System.ProcurementSystem() #Initialize system
@@ -45,6 +61,8 @@ class ProcSysCLI(cmd.Cmd):
         else:
             print(f"Unknown argument '{params[0]}'\n")
 
+    #def do_assign(self, arg)
+        #to be implemented
 
     '''Helper function: prints the list of current users in the system'''
     def user_list(self):
@@ -52,10 +70,12 @@ class ProcSysCLI(cmd.Cmd):
             print("No users in system\n")
             return
         print(self.sys.GetListOfUsers())
-    
 
     '''Helper function: makes a new user and adds it to the system'''
     def user_make(self, type, name):
+        if(not(self.sys.CheckPermissions(perm.FunctionTypes.MAKE_USER))):
+            print("Permission Denied")
+            return
         if (type == 'c'):
             self.sys.userDB.AddUser(Users.Client(name, 'password'))
         if (type == 'm'):
