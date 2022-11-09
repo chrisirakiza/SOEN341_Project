@@ -1,7 +1,8 @@
 import cmd
 import System as System
 import Users
-import Permissions as perm
+import CLIParser
+from Permissions import FunctionTypes as perm
 
 ##################################################################################################
 # Class: ProcSysCLI
@@ -29,10 +30,9 @@ class ProcSysCLI(cmd.Cmd):
         '''Exits the system'''
         return True
     
-
     def do_test(self, arg):
         '''Test function, used for development purposes'''
-        print(self.sys.CheckPermissions(perm.FunctionTypes.MAKE_USER))
+        print(self.sys.CheckPermissions(perm.MAKE_USER))
 
     def do_user(self, arg):
         '''
@@ -46,53 +46,50 @@ class ProcSysCLI(cmd.Cmd):
                     -m: Manager
                     -s: Supplier
         '''
-        params = arg.split()
-        if (params[0] == "list" or params[0] == "-l"):
-            self.user_list()
-        elif (params[0] == "make" or params[0] == "-m"):
-            if (params[1] == "client" or params[1] == "-c"):
-                self.user_make('c', params[2])
-            elif (params[1] == "manager" or params[1] == "-m"):
-                self.user_make('m', params[2])
-            elif (params[1] == "supplier" or params[1] == "-s"):
-                self.user_make('s', params[2])
-            else:
-                print(f"Invalid user type '{params[1]}'")
-        else:
-            print(f"Unknown argument '{params[0]}'\n")
+        try:
+            commandType = CLIParser.do_user_parse(self, arg)
+            if (commandType == "list"):
+                if (self.sys.userDB.GetNumberOfUsers() == 0):
+                    print("No users in system")
+                    return
+                print(self.sys.GetListOfUsers())
+            elif (commandType == "make"):
+                # Check for permissions
+                if (not self.sys.CheckPermissions(perm.MAKE_USER)):
+                    print("Permission Denied")
+                    return
+                type, name, pwd = CLIParser.do_user_make_parse(self, arg)
+                userID = self.sys.CreateNewUser(type, name, pwd)
+                print(f"User of type {type.name} created with ID: {userID}")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
 
-    #def do_assign(self, arg)
-        #to be implemented
-
-    '''Helper function: prints the list of current users in the system'''
-    def user_list(self):
-        if (self.sys.userDB.GetNumberOfUsers() == 0):
-            print("No users in system\n")
-            return
-        print(self.sys.GetListOfUsers())
-
-    '''Helper function: makes a new user and adds it to the system'''
-    def user_make(self, type, name):
-        if(not(self.sys.CheckPermissions(perm.FunctionTypes.MAKE_USER))):
+    def do_assign(self, arg):
+        # Check for permissions
+        if(not(self.sys.CheckPermissions(perm.ASSIGN_CLI_TO_MANA))):
             print("Permission Denied")
             return
-        if (type == 'c'):
-            self.sys.userDB.AddUser(Users.Client(name, 'password'))
-        if (type == 'm'):
-            self.sys.userDB.AddUser(Users.Manager(name, 'password'))
-        if (type == 's'):
-            self.sys.userDB.AddUser(Users.Supplier(name, 'password'))
+        # Attempt to assign client to manager
+        try:
+            clientID, managerID = CLIParser.do_assign_parse(self, arg)
+            self.sys.AssignManager(clientID, managerID)
+            print(f"Client {clientID} successfully assigned to manager {managerID}")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
     
     def do_login(self, arg):
         '''
         Usage: login <user-name> <user-password>
         '''
-        params = arg.split()
-        if (self.sys.SwitchActiveUser(params[0], params[1])):
-            print(f"Switched to user '{self.sys.active_user.name}'\n")
+        if (not self.sys.CheckPermissions(perm.LOGIN)):
+            print(f"Permission denied")
+            return
+        try:
+            userID, pwd = CLIParser.do_login_parse(self, arg)
+            self.sys.SwitchActiveUser(userID, pwd)
             self.prompt = f"({self.sys.active_user.GetType().name}) "
-        else:
-            print(f"Invalid username or password\n")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
 
 
 #Main program loop

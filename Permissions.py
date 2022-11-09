@@ -1,5 +1,5 @@
 from enum import Enum
-import Users
+from Users import UserType as UT
 
 #################################################################################################
 # Class: FunctionTypes
@@ -32,8 +32,8 @@ class FunctionTypes(Enum):
 #################################################################################################
 
 class Permissions:
-    user_permissions = { # Make dictionary
-        FunctionTypes.MAKE_USER: {Users.UserType.ADMIN: True},
-        FunctionTypes.LOGIN: {Users.UserType.ADMIN: True, Users.UserType.CLIENT: True, Users.UserType.SUPPLIER: True, Users.UserType.MANAGER: True},
-        FunctionTypes.ASSIGN_CLI_TO_MANA: {Users.UserType.ADMIN: True,Users.UserType.MANAGER: True}
+    user_permissions = {
+        FunctionTypes.MAKE_USER: {UT.ADMIN: True},
+        FunctionTypes.LOGIN: {UT.ADMIN: True, UT.CLIENT: True, UT.SUPPLIER: True, UT.MANAGER: True},
+        FunctionTypes.ASSIGN_CLI_TO_MANA: {UT.ADMIN: True,UT.MANAGER: True}
     }
