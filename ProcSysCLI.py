@@ -27,7 +27,9 @@ class ProcSysCLI(cmd.Cmd):
 
 
     def do_exit(self, arg):
-        '''Exits the system'''
+        '''
+        Exits the system
+        '''
         return True
     
     def do_test(self, arg):
@@ -40,11 +42,13 @@ class ProcSysCLI(cmd.Cmd):
             [option]:
             -l: Lists users
             -m: Make user
-                user -m <user-type> <user-name>
+                user -m <user-type> <user-name> <password>
                 <user-type>:
                     -c: Client
                     -m: Manager
                     -s: Supplier
+                <password>:
+                    defaults to 'password' if not specifies
         '''
         try:
             commandType = CLIParser.do_user_parse(self, arg)
@@ -65,6 +69,11 @@ class ProcSysCLI(cmd.Cmd):
             print(f"ERROR: {str(e)}")
 
     def do_assign(self, arg):
+        '''
+        Usage: assign <client-id> <manager-id>
+            <manager-id>
+                -s: uses active user's ID
+        '''
         # Check for permissions
         if(not(self.sys.CheckPermissions(perm.ASSIGN_CLI_TO_MANA))):
             print("Permission Denied")
