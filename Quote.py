@@ -3,24 +3,20 @@
 
 import Users
 
-
 class Quote:
 
-# constructor 
+        # constructor 
 
-  def __init__(self,Price, supplier):
+        def __init__(self,Price, supplier):
+                 self.Price = Price 
+                 self.user = supplier
 
-    self.Price = Price 
-    self.user = supplier
+        # getter and setter
+        def GetPrice(self,Price) -> float:
+                return self.Price
 
-# getter
-def GetPrice(self,Price) -> float:
-        return self.Price
-
-# setter 
-
-def SetPrice(self, p) -> str:
-        self.Price = p
+        def SetPrice(self, p) -> str:
+                self.Price = p
         
 
 
