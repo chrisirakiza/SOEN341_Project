@@ -25,14 +25,9 @@ class ProcurementSystem:
     def __init__(self) -> None:
         self.database = db.Create_Database('localhost', 'root', 'star26', 'SOEN341')
         self.connection = self.database.connect_to_database()
-        
-        
-        self.userDB = Database.UserDatabase() #initialize the user database
-
-        
-
-        admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
-        self.userDB.AddUser(admin_user)
+        #self.userDB = Database.UserDatabase() #initialize the user database
+        #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
+        #self.userDB.AddUser(admin_user)
         self.active_user = 'A0001' #admin_user
     
     def SwitchActiveUser(self, userID: str, userPWD: str): #takes a user's ID and password
@@ -43,19 +38,13 @@ class ProcurementSystem:
         if (pwd != userPWD):  #verifies if user credentials are correct
             raise Exception(f"Invalid password for user {userID}")
         self.active_user = userID    #assigns switched user as active user.
-        return userType
+        return Users.UserType.ParseUserType(userType)
     
     def GetListOfUsers(self) -> str:     #returns list of user's accounts w. names, IDs and user types
         list = ""
-        print(self.database.get_all_users())
         userList = self.database.get_all_users()
-        print(userList)
         for user in userList:
-            print(user)
             list += f"ID: {user[1]}, Name: {user[0]}, Type: {user[2]}\n"
-        # userList = self.userDB.GetAllUsers()
-        # for user in userList:
-        #     list += f"ID: {user.GetID()}, Name: {user.GetName()}, Type: {user.GetType().name}\n"
         return list
     
     def CreateNewUser(self, type: Users.UserType, name: str, pwd: str) -> str:

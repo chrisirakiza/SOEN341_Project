@@ -21,12 +21,10 @@ from Permissions import FunctionTypes as perm
 
 
 class ProcSysCLI(cmd.Cmd):
-    intro = "----Procurement System Prototype CLI----"
+    intro = "\n\n----Procurement System Prototype CLI----"
     sys = System.ProcurementSystem() #Initialize system
     name, userID, pwd, userType = sys.GetUserValues(sys.active_user)
     prompt = f"({userType}) "
-    #prompt = f"({sys.active_user.GetType().name}) "
-
 
     def do_exit(self, arg):
         '''
@@ -99,7 +97,7 @@ class ProcSysCLI(cmd.Cmd):
         try:
             userID, pwd = CLIParser.do_login_parse(self, arg)
             userType = self.sys.SwitchActiveUser(userID, pwd)
-            self.prompt = f"({userType}) "
+            self.prompt = f"({userType.name}) "
         except Exception as e:
             print(f"ERROR: {str(e)}")
 

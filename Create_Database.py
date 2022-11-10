@@ -12,18 +12,20 @@ class Create_Database:
         
     #EXECUTE A QUERY
         
-    def execute_query(self, connection, mysql_query):
+    def execute_query(self, connection, mysql_query, verbose = False):
         cursor = connection.cursor()
         try:
             cursor.execute(mysql_query)
             connection.commit()
-            print("Query successful")
+            if (verbose):
+                print("Query successful")
         except Error as e:
-            print("Error: ", e)
+            if (verbose):
+                print("Error: ", e)
             
     #READ DATA FROM DATABASE
                         
-    def read_query(self, connection, mysql_query):
+    def read_query(self, connection, mysql_query, verbose = False):
         cursor = connection.cursor()
         result = None
         try:
@@ -31,7 +33,8 @@ class Create_Database:
             result = cursor.fetchall()
             return result
         except Error as e:
-            print("Error: ", e)
+            if (verbose):
+                print("Error: ", e)
 
     #CONNECT TO THE MYSQL DATABASE
             
@@ -53,27 +56,28 @@ class Create_Database:
         return connection
     
     def check_admin(self):
-        print(self.read_query(connection, """SELECT * FROM USER WHERE userID = 'A0001' """))
         if (self.read_query(connection, """SELECT * FROM USER WHERE userID = 'A0001' """) == []): 
-            print("Admin Created")
             self.execute_query(connection, """INSERT INTO USER VALUES(0, 'admin', 'A0001', 'admin', 'ADMIN')""")
-
 
     def get_counter_value(self, counterType: str):
         query_get_last_count = """SELECT MAX(%s.id) FROM %s"""%(counterType, counterType)
         counter = self.read_query(connection, query_get_last_count)
-        # if (counter[0][0] == None):
-        #     return 0
+        if (counter == []):
+            raise Exception(f"Unexpected counterType passed")
         return int(counter[0][0])
 
     def get_all_users(self):
         query_users = """SELECT * FROM USER"""
         user_data = self.read_query(connection, query_users)
+        if user_data == []:
+            raise Exception(f"No users present in database")
         return [[i[1], i[2], i[4]] for i in user_data]
 
     def get_user(self, user_id: str):
         query_get_user = """SELECT * FROM USER WHERE USER.userID = "%s" """ %(user_id)
         user_data = self.read_query(connection, query_get_user)
+        if user_data == []:
+            raise Exception(f"User ({user_id}) not found in database")
         return user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
 
     def add_user(self, name, user_id, password, user_type):
@@ -134,29 +138,6 @@ DB.execute_query(connection, DB.create_table_quote)
 DB.execute_query(connection, DB.create_table_company)
 DB.check_admin()
 
-#DB.execute_query(connection, """INSERT INTO USER VALUES(0, 'admin', 'A0000', 'admin', 'ADMIN')""")
-
-
-# DB2 = Create_Database('localhost', 'root', '#Snroshan1998', "soen341")
-# connection = DB2.connect_to_database()
-
-# def add_user(name, user_id, password, user_type):
-#     query_add_user = """ INSERT INTO USER VALUES (default, '%s', '%s', '%s', '%s')"""%(name, user_id, password, user_type)    
-#     DB2.execute_query(connection, query_add_user)
-    
-# def get_user(user_id):
-#     query_get_user = """SELECT * FROM USER WHERE USER.userID = "%s" """ %(user_id)
-#     user_data = DB2.read_query(connection, query_get_user)
-#     return user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
-
-# def get_counter_value():
-#     query_get_last_count = """SELECT MAX(id) FROM USER"""
-#     counter = DB2.read_query(connection, query_get_last_count)
-#     return int(counter[0][0])
-
+# TO IMPLEMENT:
 #query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d))""" %(rnum, itemName, quantity, generatedBy, assignedManager, status)
 #Create_Database.execute_query(connection, query_add_request)
-
-# add_user('Rosh', 'A0001', 'bleh', 'Admin')
-# print(get_user('A0000'))
-# get_counter_value()
