@@ -15,7 +15,7 @@ class Quote:
         def GetPrice(self,Price) -> float:
                 return self.Price
 
-        def SetPrice(self, p) -> str:
+        def SetPrice(self, p):
                 self.Price = p
         
 
