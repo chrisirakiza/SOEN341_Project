@@ -30,7 +30,6 @@ def do_user_parse(cli_sys, arg):
     else:
         raise Exception(f"Unknown argument '{params[0]}'")
 
-# <cmd> <type> <user> <pwd>
 def do_user_make_parse(cli_sys, arg):
     params = arg.split()
     if (len(params) < 3):

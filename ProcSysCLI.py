@@ -32,9 +32,11 @@ class ProcSysCLI(cmd.Cmd):
         '''
         return True
     
+
     def do_test(self, arg):
         '''Test function, used for development purposes'''
-        print(self.sys.CheckPermissions(perm.MAKE_USER))
+        print(">:)")
+
 
     def do_user(self, arg):
         '''
@@ -68,6 +70,7 @@ class ProcSysCLI(cmd.Cmd):
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
+
     def do_assign(self, arg):
         '''
         Usage: assign <client-id> <manager-id>
@@ -86,6 +89,7 @@ class ProcSysCLI(cmd.Cmd):
         except Exception as e:
             print(f"ERROR: {str(e)}")
     
+
     def do_login(self, arg):
         '''
         Usage: login <user-name> <user-password>
