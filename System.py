@@ -1,6 +1,7 @@
 import Users
 import Database
 import Permissions as perm
+import Create_Database as db
 
 #################################################################################################
 # Class: ProcurementSystem
@@ -22,45 +23,59 @@ import Permissions as perm
 
 class ProcurementSystem:
     def __init__(self) -> None:
+        self.database = db.Create_Database('localhost', 'root', 'star26', 'SOEN341')
+        self.connection = self.database.connect_to_database()
+        
+        
         self.userDB = Database.UserDatabase() #initialize the user database
+
+        
 
         admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
         self.userDB.AddUser(admin_user)
-        self.active_user = admin_user
+        self.active_user = 'A0001' #admin_user
     
     def SwitchActiveUser(self, userID: str, userPWD: str): #takes a user's ID and password
-        user = self.userDB.GetUserByID(userID)
-        if (user == None):
-            raise Exception(f"User {userID} does not exist in system")
-        if (user.GetPassword() != hash(userPWD)):  #verifies if user credentials are correct
+        name, userID, pwd, userType = self.GetUserValues(userID)
+        #user = self.userDB.GetUserByID(userID)
+        # if (user == None):
+        #     raise Exception(f"User {userID} does not exist in system")
+        if (pwd != userPWD):  #verifies if user credentials are correct
             raise Exception(f"Invalid password for user {userID}")
-        self.active_user = user    #assigns switched user as active user.
+        self.active_user = userID    #assigns switched user as active user.
+        return userType
     
     def GetListOfUsers(self) -> str:     #returns list of user's accounts w. names, IDs and user types
         list = ""
-        userList = self.userDB.GetAllUsers()
+        print(self.database.get_all_users())
+        userList = self.database.get_all_users()
+        print(userList)
         for user in userList:
-            list += f"ID: {user.GetID()}, Name: {user.GetName()}, Type: {user.GetType().name}\n"
+            print(user)
+            list += f"ID: {user[1]}, Name: {user[0]}, Type: {user[2]}\n"
+        # userList = self.userDB.GetAllUsers()
+        # for user in userList:
+        #     list += f"ID: {user.GetID()}, Name: {user.GetName()}, Type: {user.GetType().name}\n"
         return list
     
     def CreateNewUser(self, type: Users.UserType, name: str, pwd: str) -> str:
-        if (type == Users.UserType.ADMIN):
-            user = Users.Admin(name, pwd)
-        elif (type == Users.UserType.MANAGER):
-            user = Users.Manager(name, pwd)
-        elif (type == Users.UserType.CLIENT):
-            user = Users.Client(name, pwd)
-        elif (type == Users.UserType.SUPPLIER):
-            user = Users.Supplier(name, pwd)
-        else:
-            raise Exception(f"Invalid user type")
-            return ""
-        self.userDB.AddUser(user)
-        return user.GetID()
+        user_id_counter = self.database.get_counter_value("USER")
+        user_id = f"{type.name[0]}" + f"{user_id_counter + 1}".zfill(4)
+        userType = type.name
+        self.database.add_user(name, user_id, pwd, userType)
+        return user_id
+
+    #name, userID, pwd, userType
+    def GetUserValues(self, userID: str):
+        name, userID, pwd, userType = self.database.get_user(userID)
+        return name, userID, pwd, userType
+        
 
     def CheckPermissions(self, commandType: perm.FunctionTypes) -> bool:    #verifies if a given active user is allowed to execute a given command
          #returns false as default if UserType of active user does not appear in permissions dictionary.
-        return perm.Permissions.user_permissions.get(commandType).get(self.active_user.GetType(), False)
+        name, userID, pwd, userType = self.database.get_user(self.active_user)
+        type = Users.UserType.ParseUserType(userType)
+        return perm.Permissions.user_permissions.get(commandType).get(type, False)
 
     def AssignManager(self, clientID: str, managerID: str):
         client = self.userDB.GetUserByID(clientID)

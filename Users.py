@@ -17,6 +17,16 @@ class UserType(IntEnum):
     SUPPLIER = 3
     ADMIN = 4
 
+    def ParseUserType(userType: str):
+        if (userType.lower() == "client"):
+            return UserType.CLIENT
+        if (userType.lower() == "manager"):
+            return UserType.MANAGER
+        if (userType.lower() == "supplier"):
+            return UserType.SUPPLIER
+        if (userType.lower() == "admin"):
+            return UserType.ADMIN
+
 #################################################################################################
 # Class: Users
 # @members: int user_id_counter 

@@ -23,7 +23,9 @@ from Permissions import FunctionTypes as perm
 class ProcSysCLI(cmd.Cmd):
     intro = "----Procurement System Prototype CLI----"
     sys = System.ProcurementSystem() #Initialize system
-    prompt = f"({sys.active_user.GetType().name}) "
+    name, userID, pwd, userType = sys.GetUserValues(sys.active_user)
+    prompt = f"({userType}) "
+    #prompt = f"({sys.active_user.GetType().name}) "
 
 
     def do_exit(self, arg):
@@ -55,9 +57,6 @@ class ProcSysCLI(cmd.Cmd):
         try:
             commandType = CLIParser.do_user_parse(self, arg)
             if (commandType == "list"):
-                if (self.sys.userDB.GetNumberOfUsers() == 0):
-                    print("No users in system")
-                    return
                 print(self.sys.GetListOfUsers())
             elif (commandType == "make"):
                 # Check for permissions
@@ -99,8 +98,8 @@ class ProcSysCLI(cmd.Cmd):
             return
         try:
             userID, pwd = CLIParser.do_login_parse(self, arg)
-            self.sys.SwitchActiveUser(userID, pwd)
-            self.prompt = f"({self.sys.active_user.GetType().name}) "
+            userType = self.sys.SwitchActiveUser(userID, pwd)
+            self.prompt = f"({userType}) "
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
