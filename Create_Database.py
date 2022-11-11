@@ -64,6 +64,8 @@ class Create_Database:
         counter = self.read_query(connection, query_get_last_count)
         if (counter == []):
             raise Exception(f"Unexpected counterType passed")
+        if (counter[0][0] == None):
+            return 0
         return int(counter[0][0])
 
     def get_all_users(self):
@@ -88,15 +90,15 @@ class Create_Database:
         self.execute_query(connection, """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID))
 
     def add_procurement_request(self, rnum, item, quantity, client_id, manager_id, status):
-        query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d))""" %(rnum, item, quantity, client_id, manager_id, status)
+        query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d, default)""" %(rnum, item, int(quantity), client_id, manager_id, status.value)
         self.execute_query(connection, query_add_request)
 
 
     def get_manager_from_client(self, clientID: str):
-        query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = %s""" %(clientID)
+        query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = '%s'""" %(clientID)
         managerID = self.read_query(connection, query_get_manager)
         if managerID == []:
-            raise Exception(f"User ({clientID}) not found in manager database")
+            raise Exception(f"User {clientID} does not have an assigned manager")
         return managerID[0][0]
 
     #DESIGNING QUERIES TO BUILD DATABASE
@@ -117,7 +119,7 @@ class Create_Database:
                                             generatedBy VARCHAR(10) REFERENCES USER(userID),
                                             assignedManager VARCHAR(10) REFERENCES USER(userID),
                                             status INTEGER,
-                                            acceptedQuoteID VARCHAR(10),
+                                            acceptedQuoteID VARCHAR(10) DEFAULT(NULL),
                                             INDEX(id)
                                             )"""
     
@@ -151,7 +153,7 @@ class Create_Database:
                                             )"""
 
 
-DB = Create_Database('localhost', 'root', "I812jbas>,dvJape;s'or-_12", "SOEN341")
+DB = Create_Database('localhost', 'root', "star26", "SOEN341")
 connection = DB.connect_to_database()
 
 DB.execute_query(connection, DB.create_table_user)

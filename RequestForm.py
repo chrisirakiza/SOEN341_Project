@@ -29,7 +29,7 @@ class RequestStatus(Enum):
 
 class ProcurementRequest:
     
-    database = db.Create_Database('localhost', 'root', 'star26', 'SOEN341')
+    #database = db.Create_Database('localhost', 'root', 'star26', 'SOEN341')
 
     def __init__(self, rnum,name,client,quant,stat: RequestStatus, assignedManager):####include user object
         self.requestNum= rnum
@@ -39,8 +39,8 @@ class ProcurementRequest:
         self.status= stat
         self.assignedManager = assignedManager
 
-    def addRequest(self):
-        self.database.add_procurement_request(self.requestNum, self.itemName, self.quantity, self.generatedBy, self.assignedManager, self.status)
+    # def addRequest(self):
+    #     self.database.add_procurement_request(self.requestNum, self.itemName, self.quantity, self.generatedBy, self.assignedManager, self.status)
 
     #getters
     def getRequestNum(self) -> int:
