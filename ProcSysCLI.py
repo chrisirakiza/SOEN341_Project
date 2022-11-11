@@ -21,10 +21,10 @@ from Permissions import FunctionTypes as perm
 
 
 class ProcSysCLI(cmd.Cmd):
-    intro = "----Procurement System Prototype CLI----"
+    intro = "\n\n----Procurement System Prototype CLI----"
     sys = System.ProcurementSystem() #Initialize system
-    prompt = f"({sys.active_user.GetType().name}) "
-
+    name, userID, pwd, userType = sys.GetUserValues(sys.active_user)
+    prompt = f"({userType}) "
 
     def do_exit(self, arg):
         '''
@@ -55,9 +55,6 @@ class ProcSysCLI(cmd.Cmd):
         try:
             commandType = CLIParser.do_user_parse(self, arg)
             if (commandType == "list"):
-                if (self.sys.userDB.GetNumberOfUsers() == 0):
-                    print("No users in system")
-                    return
                 print(self.sys.GetListOfUsers())
             elif (commandType == "make"):
                 # Check for permissions
@@ -99,11 +96,26 @@ class ProcSysCLI(cmd.Cmd):
             return
         try:
             userID, pwd = CLIParser.do_login_parse(self, arg)
-            self.sys.SwitchActiveUser(userID, pwd)
-            self.prompt = f"({self.sys.active_user.GetType().name}) "
+            userType = self.sys.SwitchActiveUser(userID, pwd)
+            self.prompt = f"({userType.name}) "
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
+    def do_request(self,arg):
+        '''
+        Usage: request <item-name> <quantity>
+        '''
+        #check for permissions
+        if(not(self.sys.CheckPermissions(perm.CREATE_REQUEST))): 
+            print("Permission Denied")
+            return
+        try: 
+            item, quant = CLIParser.do_request_parse(self,arg)
+            reqID = self.sys.CreateRequest(self.sys.active_user, item,quant)
+            print(f"Request created with ID {reqID}")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
+        
 
 #Main program loop
 if __name__ == '__main__':

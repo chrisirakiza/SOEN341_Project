@@ -16,6 +16,7 @@ class FunctionTypes(Enum):
     MAKE_USER = 0 
     LOGIN = 1
     ASSIGN_CLI_TO_MANA = 2
+    CREATE_REQUEST = 3
 
 
 #################################################################################################
@@ -35,5 +36,6 @@ class Permissions:
     user_permissions = {
         FunctionTypes.MAKE_USER: {UT.ADMIN: True},
         FunctionTypes.LOGIN: {UT.ADMIN: True, UT.CLIENT: True, UT.SUPPLIER: True, UT.MANAGER: True},
-        FunctionTypes.ASSIGN_CLI_TO_MANA: {UT.ADMIN: True,UT.MANAGER: True}
+        FunctionTypes.ASSIGN_CLI_TO_MANA: {UT.ADMIN: True,UT.MANAGER: True},
+        FunctionTypes.CREATE_REQUEST: {UT.CLIENT: True}
     }
