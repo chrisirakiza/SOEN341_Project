@@ -7,8 +7,7 @@ def do_assign_parse(cli_sys, arg):
     clientID = params[0]
     managerID = params[1]
     if (managerID == "-s"):
-        managerID = cli_sys.sys.active_user.GetID()
-    print(managerID)
+        managerID = cli_sys.sys.active_user
     return clientID, managerID
 
 def do_login_parse(cli_sys, arg):

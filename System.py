@@ -44,7 +44,8 @@ class ProcurementSystem:
         list = ""
         userList = self.database.get_all_users()
         for user in userList:
-            list += f"ID: {user[1]}, Name: {user[0]}, Type: {user[2]}\n"
+            list += f"ID: {user[1]}, Name: {user[0]}, Type: {user[2]}"
+            list += "\n"
         return list
     
     def CreateNewUser(self, type: Users.UserType, name: str, pwd: str) -> str:
@@ -67,15 +68,13 @@ class ProcurementSystem:
         return perm.Permissions.user_permissions.get(commandType).get(type, False)
 
     def AssignManager(self, clientID: str, managerID: str):
-        client = self.userDB.GetUserByID(clientID)
-        manager = self.userDB.GetUserByID(managerID)
-        if (client == None):
-            raise Exception(f"Client does not exist in the system")
-        if (manager == None):
-            raise Exception(f"Manager does not exist in the system")
-        if (client.GetType() != Users.UserType.CLIENT):
+        c_name, c_userID, c_pwd, c_userType = self.database.get_user(clientID)
+        m_name, m_userID, m_pwd, m_userType = self.database.get_user(managerID)
+
+        if (Users.UserType.ParseUserType(c_userType) != Users.UserType.CLIENT):
             raise Exception(f"Passed client ID is not user of type client")
-        if (manager.GetType() != Users.UserType.MANAGER):
+        if (Users.UserType.ParseUserType(m_userType) != Users.UserType.MANAGER):
             raise Exception(f"Passed manager ID is not user of type manager")
-        client.SetManager(manager)
+
+        self.database.assign_manager_to_client(c_userID, m_userID)
         

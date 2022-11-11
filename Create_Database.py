@@ -83,6 +83,16 @@ class Create_Database:
     def add_user(self, name, user_id, password, user_type):
         query_add_user = """ INSERT INTO USER VALUES (default, '%s', '%s', '%s', '%s')"""%(name, user_id, password, user_type)    
         self.execute_query(connection, query_add_user)
+    
+    def assign_manager_to_client(self, clientID: str, managerID: str):
+        self.execute_query(connection, """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID))
+
+    def get_manager_from_client(self, clientID: str):
+        query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = %s""" %(clientID)
+        managerID = self.read_query(connection, query_get_manager)
+        if managerID == []:
+            raise Exception(f"User ({clientID}) not found in manager database")
+        return managerID[0][0]
 
     #DESIGNING QUERIES TO BUILD DATABASE
 
@@ -126,7 +136,14 @@ class Create_Database:
                                             FOREIGN KEY (supplierID) REFERENCES USER(userID)
                                             ON UPDATE CASCADE ON DELETE CASCADE
                                             )"""
-    
+                                            
+    create_table_manager =              """CREATE TABLE MANAGER (
+                                            clientID VARCHAR(10) UNIQUE NOT NULL,
+                                            managedBy VARCHAR(10) REFERENCES USER(userID),
+
+                                            FOREIGN KEY (clientID) REFERENCES USER(userID)
+                                            ON DELETE CASCADE
+                                            )"""
 
 
 DB = Create_Database('localhost', 'root', 'star26', "SOEN341")
@@ -136,6 +153,7 @@ DB.execute_query(connection, DB.create_table_user)
 DB.execute_query(connection, DB.create_table_procurement_request)
 DB.execute_query(connection, DB.create_table_quote)
 DB.execute_query(connection, DB.create_table_company)
+DB.execute_query(connection, DB.create_table_manager)
 DB.check_admin()
 
 # TO IMPLEMENT:
