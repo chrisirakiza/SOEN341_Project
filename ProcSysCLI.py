@@ -101,6 +101,21 @@ class ProcSysCLI(cmd.Cmd):
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
+    def do_request(self,arg):
+        '''
+        Usage: request <item-name> <quantity>
+        '''
+        #check for permissions
+        if(not(self.sys.CheckPermissions(perm.CREATE_REQUEST))): 
+            print("Permission Denied")
+            return
+        try: 
+            item, quant = CLIParser.do_request_parse(self,arg)
+            self.sys.CreateRequest(self.sys.active_user, item,quant)
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
+        
+
 
 #Main program loop
 if __name__ == '__main__':

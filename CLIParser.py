@@ -49,3 +49,11 @@ def do_user_make_parse(cli_sys, arg):
     else:
         pwd = params[3]
     return type, name, pwd
+
+def do_request_parse(cli_sys,arg):
+    params = arg.split()
+    if(len(params)<2):
+        raise Exception(f"Create request command requires a minimum of 2 arguments: <item-name> <quantity>")
+    item = params[0]
+    quantity = params[1]
+    return item,quantity

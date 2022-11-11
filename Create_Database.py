@@ -44,7 +44,7 @@ class Create_Database:
             connection = mysql.connector.connect(host = self.host, user = self.user, passwd = self.pwd)
             print("Connected to Server: Admin")
             existing_db = self.read_query(connection, "SHOW DATABASES")
-            if ('soen341',) not in existing_db:
+            if ('SOEN341',) not in existing_db:
                 self.execute_query(connection, "CREATE DATABASE SOEN341")
                 print("Created Database: ", self.dbName)
 
@@ -87,6 +87,11 @@ class Create_Database:
     def assign_manager_to_client(self, clientID: str, managerID: str):
         self.execute_query(connection, """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID))
 
+    def add_procurement_request(self, rnum, item, quantity, client_id, manager_id, status):
+        query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d))""" %(rnum, item, quantity, client_id, manager_id, status)
+        self.execute_query(connection, query_add_request)
+
+
     def get_manager_from_client(self, clientID: str):
         query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = %s""" %(clientID)
         managerID = self.read_query(connection, query_get_manager)
@@ -109,8 +114,8 @@ class Create_Database:
                                             requestNumber VARCHAR(20) PRIMARY KEY NOT NULL,
                                             itemName VARCHAR(200),
                                             quantity INTEGER,
-                                            generatedBy VARCHAR(100) REFERENCES USER(name),
-                                            assignedManager VARCHAR(100) REFERENCES USER(name),
+                                            generatedBy VARCHAR(10) REFERENCES USER(userID),
+                                            assignedManager VARCHAR(10) REFERENCES USER(userID),
                                             status INTEGER,
                                             acceptedQuoteID VARCHAR(10),
                                             INDEX(id)
@@ -146,7 +151,7 @@ class Create_Database:
                                             )"""
 
 
-DB = Create_Database('localhost', 'root', 'star26', "SOEN341")
+DB = Create_Database('localhost', 'root', "I812jbas>,dvJape;s'or-_12", "SOEN341")
 connection = DB.connect_to_database()
 
 DB.execute_query(connection, DB.create_table_user)

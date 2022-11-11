@@ -2,6 +2,8 @@ import Users
 import Database
 import Permissions as perm
 import Create_Database as db
+from RequestForm import ProcurementRequest as request
+from RequestForm import RequestStatus as status
 
 #################################################################################################
 # Class: ProcurementSystem
@@ -23,7 +25,7 @@ import Create_Database as db
 
 class ProcurementSystem:
     def __init__(self) -> None:
-        self.database = db.Create_Database('localhost', 'root', 'star26', 'SOEN341')
+        self.database = db.Create_Database('localhost', 'root', "I812jbas>,dvJape;s'or-_12", 'SOEN341')
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
         #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
@@ -78,3 +80,18 @@ class ProcurementSystem:
 
         self.database.assign_manager_to_client(c_userID, m_userID)
         
+        
+    def generateRequestNum(self) -> int:
+        global reqNum
+        reqNum=reqNum+1
+        return reqNum
+    
+    #create Procurement Request
+    def CreateRequest(self,client_id, item, quantity):
+        request_counter = self.database.get_counter_value("PROCUREMENT_REQUEST")
+        reqNum = f"22" + f"{request_counter + 1}".zfill(6)
+
+        stat = status.SENT_TO_SUPPLIER
+        managerID = self.database.get_manager_from_client(client_id)
+        r = request(reqNum, item, client_id, quantity, stat, managerID)
+        return r.addRequest()
