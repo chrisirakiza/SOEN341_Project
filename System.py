@@ -88,3 +88,11 @@ class ProcurementSystem:
         managerID = self.database.get_manager_from_client(client_id)
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
         return reqNum
+
+    def ResetPassword(self,user_id,new_pw):
+        u_ID = self.database.get_user(user_id)[1]
+        self.database.assign_new_password(u_ID,new_pw)
+        
+        
+
+        

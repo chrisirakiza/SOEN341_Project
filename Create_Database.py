@@ -93,6 +93,9 @@ class Create_Database:
         query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d, default)""" %(rnum, item, int(quantity), client_id, manager_id, status.value)
         self.execute_query(connection, query_add_request)
 
+    def assign_new_password(self,user_ID,new_pw):
+        query_update_request = "UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
+        self.execute_query(connection, query_update_request)
 
     def get_manager_from_client(self, clientID: str):
         query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = '%s'""" %(clientID)
