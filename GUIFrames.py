@@ -25,7 +25,7 @@ class NavBar(Page):
         self.grid_rowconfigure(1, weight=1)
 
         # Populated with user box and navigation selector
-        NavBar_UserBox(root=self.root, master=self, height=100).grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
+        self.userBox = NavBar_UserBox(root=self.root, master=self, height=100).grid(row=0, column=0, sticky="nswe", padx=10, pady=10)
         NavBar_Selector(root=self.root, master=self).grid(row=1, column=0, sticky="nswe", padx=10, pady=10)
 
 class NavBar_UserBox(Page):
@@ -42,9 +42,16 @@ class NavBar_UserBox(Page):
         btn_user.grid(row=0, column=0)
 
         # User info
-        name, userID, pwd, userType = self.root.sys.GetUserValues(self.root.sys.active_user)
-        lbl_username = ctk.CTkLabel(self, text=f"User: {name}\nID: {userID}")
+        self.name, self.userID, self.pwd, self.userType = self.root.sys.GetUserValues(self.root.sys.active_user)
+        self.UpdateUserText()
+        
+        lbl_username = ctk.CTkLabel(self, text=f"User: {self.root.name}\nID: {self.userID}")
         lbl_username.grid(row=0, column=1)
+
+    def UpdateUserText(self):
+        self.name, self.userID, self.pwd, self.userType = self.root.sys.GetUserValues(self.root.sys.active_user)
+        print("xd")
+            
 
 class NavBar_Selector(Page):
     def __init__(self, root, *args, **kwargs):
@@ -54,8 +61,14 @@ class LoginPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
 
-        lbl_placeholder = ctk.CTkLabel(self, text="Login")
-        lbl_placeholder.pack()
+        lbl_placeholder = ctk.CTkLabel(self, text="User Login")
+        lbl_placeholder.pack(pady=(50,0))
+        ent_userID = ctk.CTkEntry(master=self, width=300, placeholder_text="User ID")
+        ent_userID.pack(pady=10)  
+        ent_password = ctk.CTkEntry(master=self, width=300, placeholder_text="Password", show="*")
+        ent_password.pack(pady=10)
+        btn_login = ctk.CTkButton(master=self, text="Login", command=lambda: self.root.Login(ent_userID.get(), ent_password.get()))
+        btn_login.pack(pady=10)   
 
 class PlaceHolderPage(Page):
     def __init__(self, root, *args, **kwargs):
@@ -63,7 +76,6 @@ class PlaceHolderPage(Page):
 
         lbl_placeholder = ctk.CTkLabel(self, text="Placeholder")
         lbl_placeholder.pack()
-
 
 def load_image(path, image_size):
         """ Load image """

@@ -13,7 +13,7 @@ class ProcSysGUI(ctk.CTk):
         super().__init__()
         self.sys = System.ProcurementSystem()
 
-
+        self.name, self.userID, self.pwd, self.userType = self.sys.GetUserValues(self.sys.active_user)
 
         self.title("Procurement System Prototype")
         self.geometry("800x600")
@@ -22,8 +22,8 @@ class ProcSysGUI(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         # Generate navigation bar
-        nav_bar = GUIFrames.NavBar(root=self, master=self, width=180, corner_radius=0)
-        nav_bar.grid(row=0, column=0, sticky="nswe")
+        self.nav_bar = GUIFrames.NavBar(root=self, master=self, width=180, corner_radius=0)
+        self.nav_bar.grid(row=0, column=0, sticky="nswe")
 
         # Generate all possible pages
 
@@ -32,14 +32,6 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict[GUIFrames.PageTypes.LOGIN] = GUIFrames.LoginPage(root=self, master=self)
         self.active_page = GUIFrames.PageTypes.PLACEHOLDER
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
-
-        # user_management_page = UserManagementPage(master=self)
-        # request_page = RequestSystemPage(master=self)
-        # self.user_management_page.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
-
-        # Configure navigation bar
-    def CoolFunc(self):
-        print("lol")
     
     def DisplayPage(self, pagetype):
         if pagetype == self.active_page:
@@ -52,8 +44,13 @@ class ProcSysGUI(ctk.CTk):
         newpage.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
         self.active_page = pagetype
 
-    def Login():
-        pass
+    def Login(self, userID, password):
+        print(f"U: {userID}, P:{password}")
+        self.sys.SwitchActiveUser(userID, password)
+        self.name, self.userID, self.pwd, self.userType = self.sys.GetUserValues(self.sys.active_user)
+        # self.nav_bar.userBox.UpdateUserText()
+        print(self.name)
+        # self.
 
 
 
