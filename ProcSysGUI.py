@@ -1,5 +1,5 @@
 import customtkinter as ctk # pip install customtkinter
-
+import GUIData
 import GUIFrames
 import System
 
@@ -7,13 +7,13 @@ ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
 
 
-
 class ProcSysGUI(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
         self.sys = System.ProcurementSystem()
+        self.gui_data = GUIData.GUIData()
 
-        self.name, self.userID, self.pwd, self.userType = self.sys.GetUserValues(self.sys.active_user)
+        self.UpdateActiveUser()
 
         self.title("Procurement System Prototype")
         self.geometry("800x600")
@@ -47,11 +47,13 @@ class ProcSysGUI(ctk.CTk):
     def Login(self, userID, password):
         print(f"U: {userID}, P:{password}")
         self.sys.SwitchActiveUser(userID, password)
-        self.name, self.userID, self.pwd, self.userType = self.sys.GetUserValues(self.sys.active_user)
-        # self.nav_bar.userBox.UpdateUserText()
-        print(self.name)
-        # self.
-
+        self.UpdateActiveUser()
+    
+    def UpdateActiveUser(self) -> None:
+        name, userID, pwd, userType = self.sys.GetUserValues(self.sys.active_user)
+        self.gui_data.active_user_data["name"].set(name.replace("_", " "))
+        self.gui_data.active_user_data["id"].set(userID)
+        self.gui_data.active_user_data["type"].set(userType)
 
 
 if __name__ == "__main__":

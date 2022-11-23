@@ -40,17 +40,9 @@ class NavBar_UserBox(Page):
         user_icon = load_image("/GUI_images/user-icon.png", 30)
         btn_user = ctk.CTkButton(master=self, image=user_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.LOGIN), width=40, height=40)
         btn_user.grid(row=0, column=0)
-
-        # User info
-        self.name, self.userID, self.pwd, self.userType = self.root.sys.GetUserValues(self.root.sys.active_user)
-        self.UpdateUserText()
         
-        lbl_username = ctk.CTkLabel(self, text=f"User: {self.root.name}\nID: {self.userID}")
+        lbl_username = ctk.CTkLabel(self, textvariable=self.root.gui_data.active_user_data["name"])
         lbl_username.grid(row=0, column=1)
-
-    def UpdateUserText(self):
-        self.name, self.userID, self.pwd, self.userType = self.root.sys.GetUserValues(self.root.sys.active_user)
-        print("xd")
             
 
 class NavBar_Selector(Page):
