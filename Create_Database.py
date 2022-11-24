@@ -121,6 +121,28 @@ class Create_Database:
     def get_user_requests(self, user_id: str):
         user_data = self.get_user(user_id)
         
+    
+
+
+
+
+    def get_supplier_requests(self, supplier_ID):
+        get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
+        get_item = self.read_query(connection, get_item_query)
+        get_requests_query = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.itemName = "%s" """%(get_item[0][0])
+        get_requests = self.read_query(connection, get_requests_query)
+        return get_requests
+    
+    def get_item(self, supplier_ID, requestNUM):
+        get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
+        get_item = self.read_query(connection, get_item_query)
+        get_requests_query = """SELECT itemName, quantity FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" AND PROCUREMENT_REQUEST.itemName = "%s" """%(requestNUM, get_item[0][0])
+        get_requests = self.read_query(connection, get_requests_query)
+        return get_requests[0][0], get_requests[0][1]
+    
+    def add_new_quote(self, quote_id, request_number, price, supplier_id):
+        query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
+        self.execute_query(connection, query_add_quote)
 
 
     #DESIGNING QUERIES TO BUILD DATABASE
