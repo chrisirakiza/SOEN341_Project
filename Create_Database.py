@@ -104,6 +104,25 @@ class Create_Database:
             raise Exception(f"User {clientID} does not have an assigned manager")
         return managerID[0][0]
 
+    def get_procurement_request(self, procurement_id: int):
+        query_get_request = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" """ %(procurement_id)
+        request_data = self.read_query(connection, query_get_request)
+        if request_data == []:
+            raise Exception(f"Request ({procurement_id}) not found in database")
+        return request_data[0][1], request_data[0][2], request_data[0][3], request_data[0][4], request_data[0][5], request_data[0][6], request_data[0][7]
+
+    def get_request_status(self, procurement_id:int):
+        request_data = self.get_procurement_request(procurement_id)
+        if request_data == []:
+            raise Exception(f"Request ({procurement_id}) not found in database")
+        return request_data[0][6]
+        
+    
+    def get_user_requests(self, user_id: str):
+        user_data = self.get_user(user_id)
+        
+
+
     #DESIGNING QUERIES TO BUILD DATABASE
 
     create_table_user =                """CREATE TABLE USER(

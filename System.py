@@ -89,6 +89,16 @@ class ProcurementSystem:
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
         return reqNum
 
+    #access the database to get request status
+    def displayStatus(self,request_id):
+        return self.database.get_request_status(request_id)
+
+    #display all procurement requests created by a user
+
+    def displayRequest(self,request_id):
+        return self.database.get_procurement_request(request_id)
+
+
     def ResetPassword(self,user_id,new_pw):
         u_ID = self.database.get_user(user_id)[1]
         self.database.assign_new_password(u_ID,new_pw)

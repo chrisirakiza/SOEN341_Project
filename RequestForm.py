@@ -12,9 +12,10 @@ import Create_Database as db
 #################################################################################################
 class RequestStatus(Enum):
     SENT_TO_SUPPLIER = 0
-    SENT_TO_MANAGER = 1
-    APPROVED = 2
-    DENIED = 3
+    AUTOMATICALLY_APPROVED = 1
+    SENT_TO_MANAGER = 2
+    APPROVED_BY_MANAGER = 3
+    DENIED_BY_MANAGER = 4
 
 #################################################################################################
 # Class: ProcurementRequest

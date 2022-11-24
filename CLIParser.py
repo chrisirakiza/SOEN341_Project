@@ -71,3 +71,10 @@ def do_request_parse(cli_sys,arg):
     item = params[0]
     quantity = params[1]
     return item,quantity
+
+def do_display_parse(cli_sys,arg):
+    params = arg.split()
+    if(len(params)<1):
+        raise Exception(f"Display request command requires a minimum of 2 arguments: <request-id>")
+    id = params[0]
+    return id

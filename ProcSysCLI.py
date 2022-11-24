@@ -130,6 +130,72 @@ class ProcSysCLI(cmd.Cmd):
             print(f"Request created with ID {reqID}")
         except Exception as e:
             print(f"ERROR: {str(e)}")
+
+    def do_displayRequests(self):
+        '''
+        Usage: display requests
+        '''
+        #check for permissions
+        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+            print("Permission Denied")
+            return
+        try:
+            self.sys.displayAllRequests(self.sys.active_user)
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
+
+    def do_display(self,arg):
+        '''
+        Usage: display <request-id>
+        '''
+
+        #check for permissions
+        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+            print("Permission Denied")
+            return
+        try:
+            request_id = CLIParser.do_display_parse(self,arg)
+            requestNumber, itemName, quantity, clientName, assignedManager, status, acceptedQuoteID = self.sys.displayRequest(request_id)
+            if (status==0):
+                statusStr = "REQUEST BEING PROCESSED: SENT TO SUPPLIER"
+            elif (status==1):
+                statusStr =  "REQUEST COMPLETE: ACCEPTED BY DEFAULT"
+            elif (status==2):
+                statusStr =  "REQUEST BEING PROCESSED: UNDER SUPERVISOR REVIEW"
+            elif (status==3):
+                statusStr =  "REQUEST COMPLETE: ACCEPTED BY SUPERVISOR"
+            elif (status==4):
+                statusStr = "REQUEST COMPELTE: DENIED BY SUPERVISOR"
+            print(f"REQUEST  {requestNumber}: \n NAME: {itemName}\n QUANTITY: {quantity}\n ORDERED BY: {clientName}\n ASSIGNED MANAGER: {assignedManager}\n STATUS: {statusStr}\n ACCEPTED QUOTE ID: {acceptedQuoteID}\n")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
+
+    def do_getStatus(self,arg):
+        '''
+        Usage: getStatus <request-id>
+        '''
+        #check for permissions
+        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+            print("Permission Denied")
+            return
+        try:
+            request_id = CLIParser.do_display_parse(self,arg)
+            status = self.sys.displayStatus(request_id)
+            if (status==0):
+                statusStr = "REQUEST BEING PROCESSED: SENT TO SUPPLIER"
+            elif (status==1):
+                statusStr =  "REQUEST COMPLETE: ACCEPTED BY DEFAULT"
+            elif (status==2):
+                statusStr =  "REQUEST BEING PROCESSED: UNDER SUPERVISOR REVIEW"
+            elif (status==3):
+                statusStr =  "REQUEST COMPLETE: ACCEPTED BY SUPERVISOR"
+            elif (status==4):
+                statusStr = "REQUEST COMPELTE: DENIED BY SUPERVISOR"
+            else:
+                statusStr = "ERROR: REQUEST STATUS UNAVAILABLE"
+            print(f"REQUEST {request_id} STATUS: {statusStr}")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
         
 
 #Main program loop
