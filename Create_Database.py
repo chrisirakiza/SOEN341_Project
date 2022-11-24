@@ -101,6 +101,13 @@ class Create_Database:
             raise Exception(f"User {clientID} does not have an assigned manager")
         return managerID[0][0]
 
+
+    def get_supplier_requests(self, supplier_ID):
+        get_item = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
+        get_requests = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.itemName = "%s" """%(get_item[0][0])
+        return get_requests
+
+
     #DESIGNING QUERIES TO BUILD DATABASE
 
     create_table_user =                """CREATE TABLE USER(
@@ -152,6 +159,7 @@ class Create_Database:
                                             ON DELETE CASCADE
                                             )"""
 
+    
 
 DB = Create_Database('localhost', 'root', "star26", "SOEN341")
 connection = DB.connect_to_database()
