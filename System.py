@@ -25,7 +25,7 @@ from RequestForm import RequestStatus as status
 
 class ProcurementSystem:
     def __init__(self) -> None:
-        self.database = db.Create_Database('localhost', 'root', "star26", 'SOEN341')
+        self.database = db.Create_Database('localhost', 'root', "sqlpassword", 'SOEN341')
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
         #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
