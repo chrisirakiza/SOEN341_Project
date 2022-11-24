@@ -102,4 +102,9 @@ class ProcurementSystem:
         # Create quote ID ( use the same as userID logic)
         quote_id_counter = self.database.get_counter_value("QUOTE")
         quote_id = f"{type.name[0]}" + f"{quote_id_counter + 1}".zfill(4)
-        # fetch the
+        # fetch the item name and quantity to give it a price
+        # if the request number matches then get item name and quantity. 
+        item_name, quantity = self.database.get_item(self.active_user, requestNumber)
+        self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
+        
+        
