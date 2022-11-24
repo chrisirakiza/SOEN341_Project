@@ -6,6 +6,14 @@ import System
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
 
+def popupError(e):       #basic exception handling popup window
+    popupErrorWindow = ctk.CTkToplevel()
+    popupErrorWindow.wm_title("Error")
+    popupErrorWindow.config(height = 20, width = 20)
+    labelError = ctk.CTkLabel(popupErrorWindow, text = str(e) + "!")
+    labelError.grid(row=0, column=0,pady = 10)
+    closeButton = ctk.CTkButton(master = popupErrorWindow, text="OK", command=lambda: popupErrorWindow.destroy())
+    closeButton.grid(row=1,column = 0, pady = 10)
 
 class ProcSysGUI(ctk.CTk):
     def __init__(self) -> None:
@@ -30,7 +38,12 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict = {}
         self.pageDict[GUIFrames.PageTypes.PLACEHOLDER] = GUIFrames.PlaceHolderPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.LOGIN] = GUIFrames.LoginPage(root=self, master=self)
-        self.active_page = GUIFrames.PageTypes.PLACEHOLDER
+        self.pageDict[GUIFrames.PageTypes.USER_MANAGEMENT] = GUIFrames.UserManagementPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.REQUEST_MANAGEMENT] = GUIFrames.RequestManagementPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.REQUEST_REVIEW] = GUIFrames.RequestReviewPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.QUOTE_MANAGEMENT] = GUIFrames.QuoteManagementPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.SUPPLIER_MANAGEMENT] = GUIFrames.SupplierManagementPage(root=self, master=self)
+        self.active_page = GUIFrames.PageTypes.PLACEHOLDER #can be changed for debugging
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
     
     def DisplayPage(self, pagetype):
@@ -46,8 +59,13 @@ class ProcSysGUI(ctk.CTk):
 
     def Login(self, userID, password):
         print(f"U: {userID}, P:{password}")
-        self.sys.SwitchActiveUser(userID, password)
-        self.UpdateActiveUser()
+        try:
+            self.sys.SwitchActiveUser(userID, password)
+            self.UpdateActiveUser()
+            self.DisplayPage(GUIFrames.PageTypes.PLACEHOLDER)
+        except Exception as e:
+            popupError(e)
+
     
     def UpdateActiveUser(self) -> None:
         name, userID, pwd, userType = self.sys.GetUserValues(self.sys.active_user)
@@ -56,6 +74,6 @@ class ProcSysGUI(ctk.CTk):
         self.gui_data.active_user_data["type"].set(userType)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     app = ProcSysGUI()
     app.mainloop()
