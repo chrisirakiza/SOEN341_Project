@@ -174,7 +174,7 @@ class Create_Database:
 
     
 
-DB = Create_Database('localhost', 'root', "star26", "SOEN341")
+DB = Create_Database('localhost', 'root', "sqlpassword", "SOEN341")
 connection = DB.connect_to_database()
 
 DB.execute_query(connection, DB.create_table_user)
