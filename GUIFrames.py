@@ -15,6 +15,7 @@ class PageTypes(Enum):
     QUOTE_MANAGEMENT = 5
     SUPPLIER_MANAGEMENT = 6
     USER_CREATION = 7
+    MAIN = 8
 
 class Page(ctk.CTkFrame):
     def __init__(self, root, *args, **kwargs):
@@ -24,6 +25,18 @@ class Page(ctk.CTkFrame):
         self.lift()
     def LoadPage(self):
         pass
+
+class MainPage(Page):
+    def __init__(self, root, *args, **kwargs):
+        Page.__init__(self, root, *args, **kwargs)
+
+        logo_icon = load_image("/GUI_images/logo.png", 300)
+        lbl_logo = ctk.CTkButton(master=self, image=logo_icon, text="", width=310, height=310)
+        lbl_logo.pack(pady=(100, 0))
+        lbl_title = ctk.CTkLabel(master=self, text="Amogus Inc.")
+        lbl_title.config(font=("Arial", 33))
+        lbl_title.pack(pady=10)
+
 
 class NavBar(Page):
     def __init__(self, root, *args, **kwargs):
@@ -82,6 +95,11 @@ class NavBar_Selector(Page):
 class LoginPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
+
+        # Exit button
+        exit_icon = load_image("/GUI_images/exit.png", 30)
+        btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.MAIN), width=38)
+        btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
 
         lbl_placeholder = ctk.CTkLabel(self, text="User Login")
         lbl_placeholder.pack(pady=(50,0))

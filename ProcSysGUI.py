@@ -2,14 +2,18 @@ import customtkinter as ctk # pip install customtkinter
 import GUIData
 import GUIFrames
 import System
+import Users
 
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
 
-def popupError(e):       #basic exception handling popup window
+def popupError(e) -> None:
+    '''Creates a popup window for an error'''
+    # Create window
     popupErrorWindow = ctk.CTkToplevel()
     popupErrorWindow.wm_title("Error")
     popupErrorWindow.config(height = 20, width = 40)
+    # Populate window
     labelError = ctk.CTkLabel(popupErrorWindow, text = str(e) + "!")
     labelError.grid(row=0, column=0,pady = 10)
     closeButton = ctk.CTkButton(master = popupErrorWindow, text="OK", command=lambda: popupErrorWindow.destroy())
@@ -45,45 +49,57 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict[GUIFrames.PageTypes.QUOTE_MANAGEMENT] = GUIFrames.QuoteManagementPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.SUPPLIER_MANAGEMENT] = GUIFrames.SupplierManagementPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.USER_CREATION] = GUIFrames.UserCreationPage(root=self, master=self)
-        self.active_page = GUIFrames.PageTypes.PLACEHOLDER #can be changed for debugging
+        self.pageDict[GUIFrames.PageTypes.MAIN] = GUIFrames.MainPage(root=self, master=self)
+        self.active_page = GUIFrames.PageTypes.MAIN #can be changed for debugging
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
     
-    def DisplayPage(self, pagetype):
+    def DisplayPage(self, pagetype: GUIFrames.PageTypes) -> None:
+        '''Sets the active page based on passed page type'''
+        # Error handling and efficiency check
         if pagetype == self.active_page:
             return
-
+        if (pagetype not in self.pageDict):
+            print("Requested page type doesnt exist in page dict")
+            return
+        # Hide all other pages
         for key, page in self.pageDict.items():
             page.grid_forget()
-        
+        # Set new page to active
         newpage = self.pageDict[pagetype]
         newpage.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
         newpage.LoadPage()
         self.active_page = pagetype
 
-    def Login(self, userID, password):
-        print(f"U: {userID}, P:{password}")
+    def Login(self, userID: str, password: str) -> None:
+        '''Login and handle error popup'''
         try:
             self.sys.SwitchActiveUser(userID, password)
             self.UpdateActiveUser()
             self.DisplayPage(GUIFrames.PageTypes.PLACEHOLDER)
         except Exception as e:
             popupError(e)
-
     
     def UpdateActiveUser(self) -> None:
+        '''Updates gui_data's active user information'''
+        # Get active user info from system
         name, userID, pwd, userType = self.sys.GetUserValues(self.sys.active_user)
+        # Update gui data
         self.gui_data.active_user_data["name"].set(name.replace("_", " "))
         self.gui_data.active_user_data["id"].set(userID)
         self.gui_data.active_user_data["type"].set(userType)
 
-    def CreateUser(self, userType, username, pwd):
+    def CreateUser(self, userType: Users.UserType, username: str, pwd: str) -> None:
+        '''Calls use creation from system and handles error popups'''
+        # Data validation
         if (username == ""):
             popupError("Username required")
             return
         if (pwd == ""):
             popupError("Password required")
             return
+        # Call user creation from system
         self.sys.CreateNewUser(userType, username.replace(" ", "_"), pwd)
+        # Update user data and restore user management page
         self.gui_data.UpdateUserData(self.sys)
         self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
 
