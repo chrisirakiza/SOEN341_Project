@@ -20,6 +20,8 @@ class Page(ctk.CTkFrame):
         self.root = root
     def show(self):
         self.lift()
+    def LoadPage(self):
+        pass
 
 class NavBar(Page):
     def __init__(self, root, *args, **kwargs):
@@ -105,34 +107,44 @@ class UserManagementPage(Page):
         lbl_usermanagment.grid(row = 0, column = 0)
 
         #set Parent grid
-        frame_button = ctk.CTkFrame(master = self, height=100,width=750) #frame hosting buttons
-        frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_button.columnconfigure(1,weight = 1)
-        frame_button.rowconfigure(0,weight = 1)
-        frame_table = ctk.CTkFrame(master = self) #frame for listing tables
-        frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_table.columnconfigure(4,weight = 1)
-        frame_table.rowconfigure(10,weight = 1)
+        self.frame_button = ctk.CTkFrame(master = self, height=100,width=750) #frame hosting buttons
+        self.frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
+        self.frame_button.columnconfigure(1,weight = 1)
+        self.frame_button.rowconfigure(0,weight = 1)
+        self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
+        self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
+        self.frame_table.columnconfigure(4,weight = 1)
+        self.frame_table.rowconfigure(10,weight = 1)
         
-        btn_add_user = ctk.CTkButton(master=frame_button, text = "Add User")
+        btn_add_user = ctk.CTkButton(master=self.frame_button, text = "Add User")
         btn_add_user.grid(row = 0, column = 0,sticky = "w")
-        btn_reset_password = ctk.CTkButton(master=frame_button, text = "Reset User Password")
+        btn_reset_password = ctk.CTkButton(master=self.frame_button, text = "Reset User Password")
         btn_reset_password.grid(row = 0, column = 1, sticky = "e")
 
-        lbl_id = ctk.CTkLabel(master = frame_table, text = "ID")
+        lbl_id = ctk.CTkLabel(master = self.frame_table, text = "ID")
         lbl_id.grid(row = 0, column = 0)
-        lbl_name = ctk.CTkLabel(master = frame_table, text = "Name")
+        lbl_name = ctk.CTkLabel(master = self.frame_table, text = "Name")
         lbl_name.grid(row = 0, column = 1)
-        lbl_type = ctk.CTkLabel(master = frame_table, text = "Type")
+        lbl_type = ctk.CTkLabel(master = self.frame_table, text = "Type")
         lbl_type.grid(row = 0, column = 2)
-        lbl_manager = ctk.CTkLabel(master = frame_table, text = "Managed By")
+        lbl_manager = ctk.CTkLabel(master = self.frame_table, text = "Managed By")
         lbl_manager.grid(row = 0, column = 3)
-        lbl_manager = ctk.CTkLabel(master = frame_table, text = "Company")
+        lbl_manager = ctk.CTkLabel(master = self.frame_table, text = "Company")
         lbl_manager.grid(row = 0, column = 4)
 
+        users_in_database = len(self.root.gui_data.users_data)
+
+    def LoadPage(self):
+        super().LoadPage()
+        self.PopulateTable()
+
+    def PopulateTable(self):
+        users_in_database = len(self.root.gui_data.users_data)
         for i in range (1, 11):
+            if (i >= users_in_database):
+                break
             for j in range (0,5):
-                lblTemp = ctk.CTkLabel(master = frame_table, text = "Jo Mama")
+                lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.users_data[i-1][j])
                 lblTemp.grid(row = i, column = j)
 
 class RequestManagementPage(Page):

@@ -20,6 +20,7 @@ class ProcSysGUI(ctk.CTk):
         super().__init__()
         self.sys = System.ProcurementSystem()
         self.gui_data = GUIData.GUIData()
+        self.gui_data.UpdateUserData(self.sys)
 
         self.UpdateActiveUser()
 
@@ -55,6 +56,7 @@ class ProcSysGUI(ctk.CTk):
         
         newpage = self.pageDict[pagetype]
         newpage.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
+        newpage.LoadPage()
         self.active_page = pagetype
 
     def Login(self, userID, password):
