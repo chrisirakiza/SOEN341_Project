@@ -141,7 +141,7 @@ class UserManagementPage(Page):
     def PopulateTable(self):
         users_in_database = len(self.root.gui_data.users_data)
         for i in range (1, 11):
-            if (i >= users_in_database):
+            if (i > users_in_database):
                 break
             for j in range (0,5):
                 lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.users_data[i-1][j])
