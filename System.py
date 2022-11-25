@@ -87,6 +87,7 @@ class ProcurementSystem:
         stat = status.SENT_TO_SUPPLIER
         managerID = self.database.get_manager_from_client(client_id)
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
+        
         return reqNum
     
     def supplier_functionality(self):
