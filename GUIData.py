@@ -1,18 +1,27 @@
 import customtkinter as ctk
 
 class GUIData():
-    def __init__(self):
+    '''Contains GUI data for use in tkinter textvariables'''
+    def __init__(self) -> None:
+        # Contains the active user data
         self.active_user_data = {
             "name": ctk.StringVar(),
             "id": ctk.StringVar(),
             "type": ctk.StringVar()
         }
-    
+
+        # Contains all user data, in the format for the user management table
         self.users_data = []
     
-    def UpdateUserData(self, sys):
+    def UpdateUserData(self, sys) -> None:
+        '''Update the list of all user data in GUI Data structure'''
+        # Reset users data to blank list
         self.users_data = []
-        userList = sys.database.get_all_users()
+        # Get list of users and begin parsing data
+        try:
+            userList = sys.database.get_all_users()
+        except Exception as e:
+            return
         for user in userList:
             # Get baseline user information
             userID = ctk.StringVar()
@@ -33,7 +42,13 @@ class GUIData():
             else:
                 userManager.set("")
             
+            # Assign company to supplier
             userCompany = ctk.StringVar()
-            userCompany.set("N/A")
+            if (user[2].upper() == "SUPPLIER"):
+                userCompany.set("Unassigned")
+            else:
+                userCompany.set("")
+            
+            # Add user to users data
             user_data = [userID, userName, userType, userManager, userCompany]
             self.users_data.append(user_data)

@@ -2,6 +2,7 @@ import customtkinter as ctk
 from enum import Enum
 from PIL import Image, ImageTk
 import os
+import Users
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -12,7 +13,8 @@ class PageTypes(Enum):
     REQUEST_MANAGEMENT = 3
     REQUEST_REVIEW = 4
     QUOTE_MANAGEMENT = 5
-    SUPPLIER_MANAGEMENT =6
+    SUPPLIER_MANAGEMENT = 6
+    USER_CREATION = 7
 
 class Page(ctk.CTkFrame):
     def __init__(self, root, *args, **kwargs):
@@ -100,52 +102,89 @@ class PlaceHolderPage(Page):
 class UserManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
-        self.grid_columnconfigure(0,weight = 1)
-        self.grid_rowconfigure(2,weight = 1)
-       
+
+        self.table_rows = 11
+        self.table_cols = 5
+
+        # Configure grid
+        self.grid_columnconfigure(0, weight=1, uniform="column")
+        self.grid_rowconfigure(2, weight=1)
+        # Add page label
         lbl_usermanagment = ctk.CTkLabel(self, text="User Management")
-        lbl_usermanagment.grid(row = 0, column = 0)
-
-        #set Parent grid
-        self.frame_button = ctk.CTkFrame(master = self, height=100,width=750) #frame hosting buttons
-        self.frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_button.columnconfigure(1,weight = 1)
-        self.frame_button.rowconfigure(0,weight = 1)
-        self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
-        self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(4,weight = 1)
-        self.frame_table.rowconfigure(10,weight = 1)
+        lbl_usermanagment.grid(row=0, column=0, pady=(10,0))
+        # Create table frame
+        self.frame_table = ctk.CTkFrame(master=self) #frame for listing tables
+        self.frame_table.grid(row=1, column=0, sticky="nswe", padx=10, pady=10)
+        self.frame_table.columnconfigure(self.table_cols-1, weight=1)
+        self.frame_table.rowconfigure(self.table_rows-1, weight=1)
+        # Create button frame
+        self.frame_button = ctk.CTkFrame(master=self, height=10, corner_radius=0) #frame hosting buttons
+        self.frame_button.grid(row=2, column=0, sticky="nswe", pady=10)
+        self.frame_button.columnconfigure(1, weight=1)
+        self.frame_button.rowconfigure(0, weight=1)
         
-        btn_add_user = ctk.CTkButton(master=self.frame_button, text = "Add User")
-        btn_add_user.grid(row = 0, column = 0,sticky = "w")
-        btn_reset_password = ctk.CTkButton(master=self.frame_button, text = "Reset User Password")
-        btn_reset_password.grid(row = 0, column = 1, sticky = "e")
+        # Populate button frame
+        add_user_icon = load_image("/GUI_images/add-user.png", 30)
+        btn_add_user = ctk.CTkButton(master=self.frame_button, image=add_user_icon, text="Add User", command=lambda: self.root.DisplayPage(PageTypes.USER_CREATION))
+        btn_add_user.grid(row=0, column=0, sticky="w", padx=(100, 10))
+        reset_password_icon = load_image("/GUI_images/loop-circular.png", 30)
+        btn_reset_password = ctk.CTkButton(master=self.frame_button, image=reset_password_icon , text="Reset User Password")
+        btn_reset_password.grid(row=0, column=1, sticky="e", padx=(10, 100))
 
-        lbl_id = ctk.CTkLabel(master = self.frame_table, text = "ID")
-        lbl_id.grid(row = 0, column = 0)
-        lbl_name = ctk.CTkLabel(master = self.frame_table, text = "Name")
-        lbl_name.grid(row = 0, column = 1)
-        lbl_type = ctk.CTkLabel(master = self.frame_table, text = "Type")
-        lbl_type.grid(row = 0, column = 2)
-        lbl_manager = ctk.CTkLabel(master = self.frame_table, text = "Managed By")
-        lbl_manager.grid(row = 0, column = 3)
-        lbl_manager = ctk.CTkLabel(master = self.frame_table, text = "Company")
-        lbl_manager.grid(row = 0, column = 4)
-
-        users_in_database = len(self.root.gui_data.users_data)
+        # Set up table
+        lbl_id = ctk.CTkLabel(master=self.frame_table, text="ID")
+        lbl_id.grid(row=0, column=0, sticky='EW')
+        lbl_name = ctk.CTkLabel(master=self.frame_table, text="Name")
+        lbl_name.grid(row=0, column=1, sticky='EW')
+        lbl_type = ctk.CTkLabel(master=self.frame_table, text="Type")
+        lbl_type.grid(row=0, column=2, sticky='EW')
+        lbl_manager = ctk.CTkLabel(master=self.frame_table, text="Managed By")
+        lbl_manager.grid(row=0, column=3, sticky='EW')
+        lbl_manager = ctk.CTkLabel(master=self.frame_table, text="Company")
+        lbl_manager.grid(row=0, column=4, sticky='EW')
+        self.PopulateTable()
 
     def LoadPage(self):
         super().LoadPage()
         self.PopulateTable()
 
     def PopulateTable(self):
+        '''Populates the table using GUI data from the root'''
         users_in_database = len(self.root.gui_data.users_data)
-        for i in range (1, 11):
+        for i in range(1, self.table_rows):
             if (i > users_in_database):
                 break
-            for j in range (0,5):
+            for j in range (0, self.table_cols):
                 lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.users_data[i-1][j])
-                lblTemp.grid(row = i, column = j)
+                lblTemp.grid(row=i, column=j, sticky='EW')
+
+class UserCreationPage(Page):
+    def __init__(self, root, *args, **kwargs):
+        Page.__init__(self, root, *args, **kwargs)
+
+        # Exit button
+        exit_icon = load_image("/GUI_images/exit.png", 30)
+        btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.USER_MANAGEMENT), width=38)
+        btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+        # Page label
+        lbl_placeholder = ctk.CTkLabel(self, text="User Create")
+        lbl_placeholder.pack(pady=(50,0))
+        # Username and password entry
+        ent_username = ctk.CTkEntry(master=self, width=300, placeholder_text="Username")
+        ent_username.pack(pady=10)  
+        ent_password = ctk.CTkEntry(master=self, width=300, placeholder_text="Password", show="*")
+        ent_password.pack(pady=10)
+        # Type selector
+        userTypes = ["Client", "Manager", "Supplier", "Admin"]
+        cbo_type = ctk.CTkComboBox(master=self, values=userTypes)
+        cbo_type.set("Client")
+        cbo_type.pack(pady=10)
+        # Create user button
+        userType = Users.UserType.ParseUserType(cbo_type.get())
+        btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(userType, ent_username.get(), ent_password.get()))
+        btn_create.pack(pady=10)
+
+
 
 class RequestManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
