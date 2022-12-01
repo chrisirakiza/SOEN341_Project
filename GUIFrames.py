@@ -36,7 +36,7 @@ class MainPage(Page):
         lbl_logo = ctk.CTkButton(master=self, image=logo_icon, text="", width=310, height=310)
         lbl_logo.pack(pady=(100, 0))
         lbl_title = ctk.CTkLabel(master=self, text="Amogus Inc.")
-        lbl_title.config(font=("Arial", 33))
+        lbl_title.configure(font=("Arial", 33))
         lbl_title.pack(pady=10)
 
 
@@ -197,11 +197,9 @@ class UserCreationPage(Page):
         # Type selector
         userTypes = ["Client", "Manager", "Supplier", "Admin"]
         cbo_type = ctk.CTkComboBox(master=self, values=userTypes)
-        cbo_type.set("Client")
         cbo_type.pack(pady=10)
         # Create user button
-        userType = Users.UserType.ParseUserType(cbo_type.get())
-        btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(userType, ent_username.get(), ent_password.get()))
+        btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(Users.UserType.ParseUserType(cbo_type.get()), ent_username.get(), ent_password.get()))
         btn_create.pack(pady=10)
 
 class PasswordResetPage(Page):

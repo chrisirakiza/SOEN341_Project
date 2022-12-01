@@ -3,6 +3,7 @@ import GUIData
 import GUIFrames
 import System
 import Users
+from Permissions import FunctionTypes as perm
 
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
@@ -12,7 +13,7 @@ def popupError(e) -> None:
     # Create window
     popupErrorWindow = ctk.CTkToplevel()
     popupErrorWindow.wm_title("Error")
-    popupErrorWindow.config(height = 20, width = 40)
+    popupErrorWindow.configure(height = 20, width = 40)
     # Populate window
     labelError = ctk.CTkLabel(popupErrorWindow, text = str(e) + "!")
     labelError.grid(row=0, column=0,pady = 10)
@@ -92,6 +93,10 @@ class ProcSysGUI(ctk.CTk):
 
     def CreateUser(self, userType: Users.UserType, username: str, pwd: str) -> None:
         '''Calls use creation from system and handles error popups'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.MAKE_USER)):
+            popupError("Permission Denied!")
+            return
         # Data validation
         if (username == ""):
             popupError("Username required")
