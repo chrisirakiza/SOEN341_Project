@@ -119,6 +119,18 @@ class Create_Database:
     def add_new_quote(self, quote_id, request_number, price, supplier_id):
         query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
         self.execute_query(connection, query_add_quote)
+    
+    # finding the suppliers that provide the item you are looking for            
+def get_suppliers(itemName):
+    query_get_supplier = """ SELECT supplierID FROM COMPANY WHERE %s = COMPANY.productType """ %(itemName)
+    supplier_data = DB.read_query(connection, query_get_supplier)
+    return  [[i[1]] for i in supplier_data]
+
+# compare quotes from suppliers and take the lowest offering 
+def compare_quote():
+    query_compare_quote = """ SELECT * FROM QUOTE ORDER BY QUOTE.price ASC """ 
+    compare_quote_data = DB.read_query(connection, query_compare_quote)
+    print("Lowest quotes are " + compare_quote_data[0][3] + "from " + compare_quote_data[0][4] + "and " + compare_quote_data[1][3] + "from " + compare_quote_data[1][4])
         
         
     #DESIGNING QUERIES TO BUILD DATABASE
