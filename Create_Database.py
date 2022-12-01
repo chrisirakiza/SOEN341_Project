@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+import sys
 
 class Create_Database:
             
@@ -155,8 +156,9 @@ class Create_Database:
                                             ON DELETE CASCADE
                                             )"""
 
+mysql_password = sys.argv[1]
 
-DB = Create_Database('localhost', 'root', "star26", "SOEN341")
+DB = Create_Database('localhost', 'root', mysql_password, "SOEN341")
 connection = DB.connect_to_database()
 
 DB.execute_query(connection, DB.create_table_user)

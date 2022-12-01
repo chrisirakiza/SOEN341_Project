@@ -4,6 +4,7 @@ import Permissions as perm
 import Create_Database as db
 from RequestForm import ProcurementRequest as request
 from RequestForm import RequestStatus as status
+import sys
 
 #################################################################################################
 # Class: ProcurementSystem
@@ -22,10 +23,10 @@ from RequestForm import RequestStatus as status
 # 
 #################################################################################################
 
-
 class ProcurementSystem:
     def __init__(self) -> None:
-        self.database = db.Create_Database('localhost', 'root', "star26", 'SOEN341')
+        mysql_password = sys.argv[1]
+        self.database = db.Create_Database('localhost', 'root', mysql_password, 'SOEN341')
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
         #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
