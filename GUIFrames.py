@@ -18,6 +18,7 @@ class PageTypes(Enum):
     MAIN = 8
     PASSWORD_RESET = 9
     REQUEST_CREATION = 10
+    ASSIGN_MANAGER = 11
 
 class Page(ctk.CTkFrame):
     def __init__(self, root, *args, **kwargs):
@@ -141,15 +142,17 @@ class UserManagementPage(Page):
         self.frame_button = ctk.CTkFrame(master=self, height=10, corner_radius=0) #frame hosting buttons
         self.frame_button.grid(row=2, column=0, sticky="nswe", pady=10)
         self.frame_button.columnconfigure(1, weight=1)
-        self.frame_button.rowconfigure(0, weight=1)
+        self.frame_button.rowconfigure(1, weight=1)
         
         # Populate button frame
         add_user_icon = load_image("/GUI_images/add-user.png", 30)
         btn_add_user = ctk.CTkButton(master=self.frame_button, image=add_user_icon, text="Add User", command=lambda: self.root.DisplayPage(PageTypes.USER_CREATION))
-        btn_add_user.grid(row=0, column=0, sticky="w", padx=(100, 10))
+        btn_add_user.grid(row=0, column=0, sticky="w", padx=(100, 10),pady = 10)
+        btn_assign_mana = ctk.CTkButton(master=self.frame_button, text="Assign Client To Manager",command=lambda: self.root.DisplayPage(PageTypes.ASSIGN_MANAGER))
+        btn_assign_mana.grid(row=1, column=0, sticky="w", padx=(100, 10))
         reset_password_icon = load_image("/GUI_images/loop-circular.png", 30)
         btn_reset_password = ctk.CTkButton(master=self.frame_button, image=reset_password_icon , text="Reset User Password", command=lambda: self.root.DisplayPage(PageTypes.PASSWORD_RESET))
-        btn_reset_password.grid(row=0, column=1, sticky="e", padx=(10, 100))
+        btn_reset_password.grid(row=0, column=1, sticky="e", padx=(10, 100),pady = 10)
 
         # Set up table
         lbl_id = ctk.CTkLabel(master=self.frame_table, text="ID")
@@ -202,6 +205,26 @@ class UserCreationPage(Page):
         btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(Users.UserType.ParseUserType(cbo_type.get()), ent_username.get(), ent_password.get()))
         btn_create.pack(pady=10)
 
+class AssignClientToManagerPage(Page):
+    def __init__(self, root, *args, **kwargs):
+        Page.__init__(self, root, *args, **kwargs)
+
+        # Exit button
+        exit_icon = load_image("/GUI_images/exit.png", 30)
+        btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.USER_MANAGEMENT), width=38)
+        btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+        # Page label
+        lbl_placeholder = ctk.CTkLabel(self, text="Assign Client to Manager")
+        lbl_placeholder.pack(pady=(50,0))
+        # Username and password entry
+        ent_clientID = ctk.CTkEntry(master=self, width=300, placeholder_text="Client ID")
+        ent_clientID.pack(pady=10)  
+        ent_manaID = ctk.CTkEntry(master=self, width=300, placeholder_text="Manager ID")
+        ent_manaID.pack(pady=10)
+        # Confirm Button
+        btn_confirm = ctk.CTkButton(master=self, text="Confirm", command = lambda: self.root.AssignCliToMana(ent_clientID.get(),ent_manaID.get()))
+        btn_confirm.pack(pady=10)
+
 class PasswordResetPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
@@ -219,8 +242,8 @@ class PasswordResetPage(Page):
         ent_newPassword = ctk.CTkEntry(master=self, width=300, placeholder_text="New Password", show="*")
         ent_newPassword.pack(pady=10)
         # Confirm Button
-        btn_create = ctk.CTkButton(master=self, text="Confirm")
-        btn_create.pack(pady=10)
+        btn_confirm = ctk.CTkButton(master=self, text="Confirm",command = lambda: self.root.ResetUserPassword(ent_userID.get(),ent_newPassword.get()))
+        btn_confirm.pack(pady=10)
 
 class RequestManagementPage(Page):
     def __init__(self, root, *args, **kwargs):

@@ -20,6 +20,18 @@ def popupError(e) -> None:
     closeButton = ctk.CTkButton(master = popupErrorWindow, text="OK", command=lambda: popupErrorWindow.destroy())
     closeButton.grid(row=1,column = 0, pady = 10)
 
+def popupMessage(m) -> None:
+    '''Creates a popup window for Messages'''
+    # Create window
+    popupMessageWindow = ctk.CTkToplevel()
+    popupMessageWindow.wm_title("Message")
+    popupMessageWindow.configure(height = 20, width = 40)
+    # Populate window
+    labelError = ctk.CTkLabel(popupMessageWindow, text = str(m) + "!")
+    labelError.grid(row=0, column=0,pady = 10)
+    closeButton = ctk.CTkButton(master = popupMessageWindow, text="OK", command=lambda: popupMessageWindow.destroy())
+    closeButton.grid(row=1,column = 0, pady = 10)
+
 class ProcSysGUI(ctk.CTk):
     def __init__(self) -> None:
         super().__init__()
@@ -52,6 +64,7 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict[GUIFrames.PageTypes.USER_CREATION] = GUIFrames.UserCreationPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.PASSWORD_RESET] = GUIFrames.PasswordResetPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.REQUEST_CREATION] = GUIFrames.RequestCreationPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.ASSIGN_MANAGER] = GUIFrames.AssignClientToManagerPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.MAIN] = GUIFrames.MainPage(root=self, master=self)
         self.active_page = GUIFrames.PageTypes.MAIN #can be changed for debugging
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
@@ -109,6 +122,53 @@ class ProcSysGUI(ctk.CTk):
         # Update user data and restore user management page
         self.gui_data.UpdateUserData(self.sys)
         self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+
+    def ResetUserPassword(self, user_ID: str, newpwd: str) -> None:
+        '''Calls reset password from system and handles error popups'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.RESET_PASSWORD)):
+            popupError("Permission Denied!")
+            return
+        # Data validation
+        if (user_ID == ""):
+            popupError("User ID required")
+            return
+        if (newpwd == ""):
+            popupError("Password required")
+            return
+        # Call Password Reset from system
+        try:
+            self.sys.ResetPassword(user_ID,newpwd)
+            popupMessage("Success!")
+        except Exception as e:
+            popupError(e)
+        # Update user data and restore user management page
+        self.gui_data.UpdateUserData(self.sys)
+        self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+
+    def AssignCliToMana(self, client_ID: str, manager_ID: str) -> None:
+        '''Calls reset password from system and handles error popups'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.ASSIGN_CLI_TO_MANA)):
+            popupError("Permission Denied!")
+            return
+        # Data validation
+        if (client_ID == ""):
+            popupError("Client ID required")
+            return
+        if (manager_ID == ""):
+            popupError("Manager ID required")
+            return
+        # Call Password Reset from system
+        try:
+            self.sys.AssignManager(client_ID,manager_ID)
+            popupMessage("Success!")
+        except Exception as e:
+            popupError(e)
+        # Update user data and restore user management page
+        self.gui_data.UpdateUserData(self.sys)
+        self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+
 
 
 if __name__ == "__main__": 
