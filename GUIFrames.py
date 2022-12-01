@@ -16,6 +16,8 @@ class PageTypes(Enum):
     SUPPLIER_MANAGEMENT = 6
     USER_CREATION = 7
     MAIN = 8
+    PASSWORD_RESET = 9
+    REQUEST_CREATION = 10
 
 class Page(ctk.CTkFrame):
     def __init__(self, root, *args, **kwargs):
@@ -146,7 +148,7 @@ class UserManagementPage(Page):
         btn_add_user = ctk.CTkButton(master=self.frame_button, image=add_user_icon, text="Add User", command=lambda: self.root.DisplayPage(PageTypes.USER_CREATION))
         btn_add_user.grid(row=0, column=0, sticky="w", padx=(100, 10))
         reset_password_icon = load_image("/GUI_images/loop-circular.png", 30)
-        btn_reset_password = ctk.CTkButton(master=self.frame_button, image=reset_password_icon , text="Reset User Password")
+        btn_reset_password = ctk.CTkButton(master=self.frame_button, image=reset_password_icon , text="Reset User Password", command=lambda: self.root.DisplayPage(PageTypes.PASSWORD_RESET))
         btn_reset_password.grid(row=0, column=1, sticky="e", padx=(10, 100))
 
         # Set up table
@@ -202,7 +204,25 @@ class UserCreationPage(Page):
         btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(userType, ent_username.get(), ent_password.get()))
         btn_create.pack(pady=10)
 
+class PasswordResetPage(Page):
+    def __init__(self, root, *args, **kwargs):
+        Page.__init__(self, root, *args, **kwargs)
 
+        # Exit button
+        exit_icon = load_image("/GUI_images/exit.png", 30)
+        btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.USER_MANAGEMENT), width=38)
+        btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+        # Page label
+        lbl_placeholder = ctk.CTkLabel(self, text="Password Reset")
+        lbl_placeholder.pack(pady=(50,0))
+        # Username and password entry
+        ent_userID = ctk.CTkEntry(master=self, width=300, placeholder_text="User ID")
+        ent_userID.pack(pady=10)  
+        ent_newPassword = ctk.CTkEntry(master=self, width=300, placeholder_text="New Password", show="*")
+        ent_newPassword.pack(pady=10)
+        # Confirm Button
+        btn_create = ctk.CTkButton(master=self, text="Confirm")
+        btn_create.pack(pady=10)
 
 class RequestManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
@@ -223,7 +243,7 @@ class RequestManagementPage(Page):
         frame_table.columnconfigure(6,weight = 1)
         frame_table.rowconfigure(10,weight = 1)
 
-        btn_new_req = ctk.CTkButton(master=frame_button, text = "Create New Request")
+        btn_new_req = ctk.CTkButton(master=frame_button, text = "Create New Request", command=lambda: self.root.DisplayPage(PageTypes.REQUEST_CREATION))
         btn_new_req.grid(row = 0, column = 0)
        
         #initialize table header
@@ -244,7 +264,27 @@ class RequestManagementPage(Page):
             for j in range (0,6):
                 lblTemp = ctk.CTkLabel(master = frame_table, text = "chip")
                 lblTemp.grid(row = i, column = j)
-        
+
+class RequestCreationPage(Page):
+    def __init__(self, root, *args, **kwargs):
+        Page.__init__(self, root, *args, **kwargs)
+
+        # Exit button
+        exit_icon = load_image("/GUI_images/exit.png", 30)
+        btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.REQUEST_MANAGEMENT), width=38)
+        btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+        # Page label
+        lbl_placeholder = ctk.CTkLabel(self, text="Create a Procurement Request")
+        lbl_placeholder.pack(pady=(50,0))
+        # Item Type and Quantity
+        ent_userID = ctk.CTkEntry(master=self, width=300, placeholder_text="Item Name")
+        ent_userID.pack(pady=10)  
+        ent_newPassword = ctk.CTkEntry(master=self, width=90, placeholder_text="Quantity")
+        ent_newPassword.pack(pady=10)
+        # Confirm Button
+        btn_create = ctk.CTkButton(master=self, text="Confirm")
+        btn_create.pack(pady=10)
+
 class RequestReviewPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)

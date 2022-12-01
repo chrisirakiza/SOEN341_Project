@@ -49,6 +49,8 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict[GUIFrames.PageTypes.QUOTE_MANAGEMENT] = GUIFrames.QuoteManagementPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.SUPPLIER_MANAGEMENT] = GUIFrames.SupplierManagementPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.USER_CREATION] = GUIFrames.UserCreationPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.PASSWORD_RESET] = GUIFrames.PasswordResetPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.REQUEST_CREATION] = GUIFrames.RequestCreationPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.MAIN] = GUIFrames.MainPage(root=self, master=self)
         self.active_page = GUIFrames.PageTypes.MAIN #can be changed for debugging
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
