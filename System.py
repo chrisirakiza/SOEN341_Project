@@ -107,5 +107,15 @@ class ProcurementSystem:
         # if the request number matches then get item name and quantity. 
         item_name, quantity = self.database.get_item(self.active_user, requestNumber)
         self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
+            
+def get_suppliers(itemName):
+    query_get_supplier = """ SELECT supplierID FROM COMPANY WHERE %s = COMPANY.productType """ %(itemName)
+    supplier_data = DB.read_query(connection, query_get_supplier)
+    return  [[i[0]] for i in supplier_data]
+
+def compare_quote():
+    query_compare_quote = """ SELECT * FROM QUOTE ORDER BY QUOTE.price ASC """ 
+    compare_quote_data = DB.read_query(connection, query_compare_quotes)
+    print("Lowest quotes are " + compare_quote_data[0][3] + "from " + compare_quote_data[0][4] + "and " + compare_quote_data[1][3] + "from " + compare_quote_data[1][4])
         
         
