@@ -18,6 +18,7 @@ class FunctionTypes(Enum):
     ASSIGN_CLI_TO_MANA = 2
     CREATE_REQUEST = 3
     RESET_PASSWORD = 4
+    CREATE_QUOTE = 5
 
 
 #################################################################################################
@@ -39,5 +40,6 @@ class Permissions:
         FunctionTypes.LOGIN: {UT.ADMIN: True, UT.CLIENT: True, UT.SUPPLIER: True, UT.MANAGER: True},
         FunctionTypes.ASSIGN_CLI_TO_MANA: {UT.ADMIN: True,UT.MANAGER: True},
         FunctionTypes.CREATE_REQUEST: {UT.CLIENT: True},
-        FunctionTypes.RESET_PASSWORD: {UT.ADMIN: True}
+        FunctionTypes.RESET_PASSWORD: {UT.ADMIN: True},
+        FunctionTypes.CREATE_REQUEST: {UT.SUPPLIER:True}
     }

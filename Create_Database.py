@@ -118,9 +118,6 @@ class Create_Database:
         return request_data[0][6]
         
     
-    def get_user_requests(self, user_id: str):
-        user_data = self.get_user(user_id)
-        
     
 
 
@@ -143,6 +140,18 @@ class Create_Database:
     def add_new_quote(self, quote_id, request_number, price, supplier_id):
         query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
         self.execute_query(connection, query_add_quote)
+
+    def get_request_id_from_quote(self, quote_id):
+        get_quote_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = "%s" """%(quote_id)
+        quote_data = self.read_query(connection, get_quote_query)
+        request_id = quote_data[0][2]
+        return request_id
+
+    def edit_request_status(self, request_id,status):
+        edit_request_status_query = """EDIT status SET "%d" WHERE PROCUREMENT_REQUEST.requestNumber = "%s" """%(status, request_id)
+        self.read_query(connection, edit_request_status_query)
+
+
 
 
     #DESIGNING QUERIES TO BUILD DATABASE

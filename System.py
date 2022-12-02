@@ -93,7 +93,7 @@ class ProcurementSystem:
     def displayStatus(self,request_id):
         return self.database.get_request_status(request_id)
 
-    #display all procurement requests created by a user
+    #display all procurement request info given request ID
 
     def displayRequest(self,request_id):
         return self.database.get_procurement_request(request_id)
@@ -121,4 +121,12 @@ class ProcurementSystem:
         # if the request number matches then get item name and quantity. 
         item_name, quantity = self.database.get_item(self.active_user, requestNumber)
         self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
+        if (Price<5000):
+            self.AutoAcceptQuote(quote_id)
+
+    def AutoAcceptQuote(self, quote_id):
+        requestID = self.database.get_request_id_from_quote(quote_id)
+        self.database.edit_request_status(requestID, status.AUTOMATICALLY_APPROVED)
+        print(f"Quote has automatically been approved")
+
         

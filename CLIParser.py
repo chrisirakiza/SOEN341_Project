@@ -75,6 +75,14 @@ def do_request_parse(cli_sys,arg):
 def do_display_parse(cli_sys,arg):
     params = arg.split()
     if(len(params)<1):
-        raise Exception(f"Display request command requires a minimum of 2 arguments: <request-id>")
+        raise Exception(f"Display request command requires a minimum of 1 argument: <request-id>")
     id = params[0]
     return id
+
+def do_quote_parse(cli_sys,arg):
+    params = arg.split()
+    if(len(params)<2):
+        raise Exception(f"Create Quote command requires a minimum of 2 arguments: <price> <request-id>")
+    price = params[0]
+    requestID = params[1]
+    return price, requestID

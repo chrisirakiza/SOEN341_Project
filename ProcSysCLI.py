@@ -170,9 +170,9 @@ class ProcSysCLI(cmd.Cmd):
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
-    def do_getStatus(self,arg):
+    def do_status(self,arg):
         '''
-        Usage: getStatus <request-id>
+        Usage: status <request-id>
         '''
         #check for permissions
         if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
@@ -194,6 +194,21 @@ class ProcSysCLI(cmd.Cmd):
             else:
                 statusStr = "ERROR: REQUEST STATUS UNAVAILABLE"
             print(f"REQUEST {request_id} STATUS: {statusStr}")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
+
+
+    def do_quote(self,arg):
+        '''
+        Usage: quote <price> <request-id>
+        '''
+        if (not(self.sys.CheckPermissions(perm.CREATE_QUOTE))):
+            print("Permission Denied")
+            return
+        try:
+            unitPrice, requestID = CLIParser.do_display_parse(self,arg)
+            self.sys.CreateQuote(unitPrice,requestID)
+
         except Exception as e:
             print(f"ERROR: {str(e)}")
         
