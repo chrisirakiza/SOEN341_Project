@@ -3,34 +3,11 @@ import GUIData
 import GUIFrames
 import System
 import Users
+import PopUp as pu
 from Permissions import FunctionTypes as perm
 
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
-
-def popupError(e) -> None:
-    '''Creates a popup window for an error'''
-    # Create window
-    popupErrorWindow = ctk.CTkToplevel()
-    popupErrorWindow.wm_title("Error")
-    popupErrorWindow.configure(height = 20, width = 40)
-    # Populate window
-    labelError = ctk.CTkLabel(popupErrorWindow, text = str(e) + "!")
-    labelError.grid(row=0, column=0,pady = 10)
-    closeButton = ctk.CTkButton(master = popupErrorWindow, text="OK", command=lambda: popupErrorWindow.destroy())
-    closeButton.grid(row=1,column = 0, pady = 10)
-
-def popupMessage(m) -> None:
-    '''Creates a popup window for Messages'''
-    # Create window
-    popupMessageWindow = ctk.CTkToplevel()
-    popupMessageWindow.wm_title("Message")
-    popupMessageWindow.configure(height = 20, width = 40)
-    # Populate window
-    labelError = ctk.CTkLabel(popupMessageWindow, text = str(m) + "!")
-    labelError.grid(row=0, column=0,pady = 10)
-    closeButton = ctk.CTkButton(master = popupMessageWindow, text="OK", command=lambda: popupMessageWindow.destroy())
-    closeButton.grid(row=1,column = 0, pady = 10)
 
 class ProcSysGUI(ctk.CTk):
     def __init__(self) -> None:
@@ -93,7 +70,7 @@ class ProcSysGUI(ctk.CTk):
             self.UpdateActiveUser()
             self.DisplayPage(GUIFrames.PageTypes.PLACEHOLDER)
         except Exception as e:
-            popupError(e)
+            pu.popupError(e)
     
     def UpdateActiveUser(self) -> None:
         '''Updates gui_data's active user information'''
@@ -108,14 +85,14 @@ class ProcSysGUI(ctk.CTk):
         '''Calls use creation from system and handles error popups'''
         # check if active user has permission
         if(not self.sys.CheckPermissions(perm.MAKE_USER)):
-            popupError("Permission Denied!")
+            pu.popupError("Permission Denied!")
             return
         # Data validation
         if (username == ""):
-            popupError("Username required")
+            pu.popupError("Username required")
             return
         if (pwd == ""):
-            popupError("Password required")
+            pu.popupError("Password required")
             return
         # Call user creation from system
         self.sys.CreateNewUser(userType, username.replace(" ", "_"), pwd)
@@ -127,47 +104,51 @@ class ProcSysGUI(ctk.CTk):
         '''Calls reset password from system and handles error popups'''
         # check if active user has permission
         if(not self.sys.CheckPermissions(perm.RESET_PASSWORD)):
-            popupError("Permission Denied!")
+            pu.popupError("Permission Denied!")
             return
         # Data validation
         if (user_ID == ""):
-            popupError("User ID required")
+            pu.popupError("User ID required")
             return
         if (newpwd == ""):
-            popupError("Password required")
+            pu.popupError("Password required")
             return
         # Call Password Reset from system
         try:
             self.sys.ResetPassword(user_ID,newpwd)
-            popupMessage("Success!")
+            # Update user data and restore user management page
+            self.gui_data.UpdateUserData(self.sys)
+            self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+            pu.popupMessage("Success!")
         except Exception as e:
-            popupError(e)
-        # Update user data and restore user management page
-        self.gui_data.UpdateUserData(self.sys)
-        self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+            pu.popupError(e)
+        
+        
 
     def AssignCliToMana(self, client_ID: str, manager_ID: str) -> None:
         '''Calls reset password from system and handles error popups'''
         # check if active user has permission
         if(not self.sys.CheckPermissions(perm.ASSIGN_CLI_TO_MANA)):
-            popupError("Permission Denied!")
+            pu.popupError("Permission Denied!")
             return
         # Data validation
         if (client_ID == ""):
-            popupError("Client ID required")
+            pu.popupError("Client ID required")
             return
         if (manager_ID == ""):
-            popupError("Manager ID required")
+            pu.popupError("Manager ID required")
             return
         # Call Password Reset from system
         try:
             self.sys.AssignManager(client_ID,manager_ID)
-            popupMessage("Success!")
+             # Update user data and restore user management page
+            self.gui_data.UpdateUserData(self.sys)
+            self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+            pu.popupMessage("Success!")
         except Exception as e:
-            popupError(e)
-        # Update user data and restore user management page
-        self.gui_data.UpdateUserData(self.sys)
-        self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
+            pu.popupError(e)
+       
+        
 
 
 

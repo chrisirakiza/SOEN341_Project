@@ -3,6 +3,8 @@ from enum import Enum
 from PIL import Image, ImageTk
 import os
 import Users
+import PopUp as pu
+from Permissions import FunctionTypes as perm
 
 PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -75,24 +77,52 @@ class NavBar_Selector(Page):
         Page.__init__(self, root, *args, **kwargs)
 
         # User Management Button
-        btn_user_mana = ctk.CTkButton(master=self, text = "User Management", command=lambda: self.root.DisplayPage(PageTypes.USER_MANAGEMENT)) #needs to be linked
+        btn_user_mana = ctk.CTkButton(master=self, text = "User Management", command=lambda: user_mana_btn_controller(self)) 
         btn_user_mana.pack(pady = 15, fill = "both", side="top")
 
         # Request Management Button
-        btn_req_mana = ctk.CTkButton(master=self, text = "Request Management", command=lambda: self.root.DisplayPage(PageTypes.REQUEST_MANAGEMENT)) #needs to be linked
+        btn_req_mana = ctk.CTkButton(master=self, text = "Request Management", command=lambda: req_mana_btn_controller(self))
         btn_req_mana.pack(pady = 15, fill = "both", side="top")
 
         # Request Review Button
-        btn_req_rev = ctk.CTkButton(master=self, text = "Request Review", command=lambda: self.root.DisplayPage(PageTypes.REQUEST_REVIEW)) #needs to be linked
+        btn_req_rev = ctk.CTkButton(master=self, text = "Request Review", command=lambda: req_rev_btn_controller(self))
         btn_req_rev.pack(pady = 15, fill = "both", side="top")
 
         # Quote Management Button
-        btn_quo_mana = ctk.CTkButton(master=self, text = "Quote Management",command=lambda: self.root.DisplayPage(PageTypes.QUOTE_MANAGEMENT)) #needs to be linked
+        btn_quo_mana = ctk.CTkButton(master=self, text = "Quote Management",command=lambda: quo_mana_btn_controller(self))
         btn_quo_mana.pack(pady = 15, fill = "both", side="top")    
 
         # Supplier Management Button
-        btn_sup_mana = ctk.CTkButton(master=self, text = "Supplier Management",command=lambda: self.root.DisplayPage(PageTypes.SUPPLIER_MANAGEMENT)) #needs to be linked
-        btn_sup_mana.pack(pady = 15, fill = "both", side="top")    
+        btn_sup_mana = ctk.CTkButton(master=self, text = "Supplier Management",command=lambda: sup_mana_btn_controller(self))
+        btn_sup_mana.pack(pady = 15, fill = "both", side="top")  
+
+        def user_mana_btn_controller(self):
+            if(not self.root.sys.CheckPermissions(perm.ACCESS_USER_MANAGEMENT)):
+                pu.popupError("Permission Denied")
+            else:
+                self.root.DisplayPage(PageTypes.USER_MANAGEMENT)
+        def req_mana_btn_controller(self):
+            if(not self.root.sys.CheckPermissions(perm.ACCESS_REQUEST_MANAGEMENT)):
+                pu.popupError("Permission Denied")
+            else:
+                self.root.DisplayPage(PageTypes.REQUEST_MANAGEMENT)
+       
+        def req_rev_btn_controller(self):
+            if(not self.root.sys.CheckPermissions(perm.ACCESS_REQUEST_REVIEW)):
+                pu.popupError("Permission Denied")
+            else:
+                self.root.DisplayPage(PageTypes.REQUEST_REVIEW)
+        
+        def quo_mana_btn_controller(self):
+            if(not self.root.sys.CheckPermissions(perm.ACCESS_QUOTE_MANAGEMENT)):
+                pu.popupError("Permission Denied")
+            else:
+                self.root.DisplayPage(PageTypes.QUOTE_MANAGEMENT)
+        def sup_mana_btn_controller(self):
+            if(not self.root.sys.CheckPermissions(perm.ACCESS_SUPPLIER_MANAGEMENT)):
+                pu.popupError("Permission Denied")
+            else:
+                self.root.DisplayPage(PageTypes.SUPPLIER_MANAGEMENT)
      
 
 class LoginPage(Page):
@@ -110,7 +140,9 @@ class LoginPage(Page):
         ent_userID.pack(pady=10)  
         ent_password = ctk.CTkEntry(master=self, width=300, placeholder_text="Password", show="*")
         ent_password.pack(pady=10)
-        btn_login = ctk.CTkButton(master=self, text="Login", command=lambda: self.root.Login(ent_userID.get(), ent_password.get()))
+        btn_login = ctk.CTkButton(master=self, text="Login", command=lambda: [self.root.Login(ent_userID.get(), ent_password.get()),
+                                                                             ent_userID.delete(0,"end"),
+                                                                             ent_password.delete(0,"end")])
         btn_login.pack(pady=10)   
 
 class PlaceHolderPage(Page):
@@ -126,6 +158,7 @@ class UserManagementPage(Page):
 
         self.table_rows = 11
         self.table_cols = 5
+        self.access = perm.ACCESS_USER_MANAGEMENT
 
         # Configure grid
         self.grid_columnconfigure(0, weight=1, uniform="column")
@@ -202,7 +235,9 @@ class UserCreationPage(Page):
         cbo_type = ctk.CTkComboBox(master=self, values=userTypes)
         cbo_type.pack(pady=10)
         # Create user button
-        btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: self.root.CreateUser(Users.UserType.ParseUserType(cbo_type.get()), ent_username.get(), ent_password.get()))
+        btn_create = ctk.CTkButton(master=self, text="Create", command=lambda: [self.root.CreateUser(Users.UserType.ParseUserType(cbo_type.get()), ent_username.get(), ent_password.get()),
+                                                                                ent_username.delete(0,"end"),
+                                                                                ent_password.delete(0,"end")])
         btn_create.pack(pady=10)
 
 class AssignClientToManagerPage(Page):
@@ -222,7 +257,9 @@ class AssignClientToManagerPage(Page):
         ent_manaID = ctk.CTkEntry(master=self, width=300, placeholder_text="Manager ID")
         ent_manaID.pack(pady=10)
         # Confirm Button
-        btn_confirm = ctk.CTkButton(master=self, text="Confirm", command = lambda: self.root.AssignCliToMana(ent_clientID.get(),ent_manaID.get()))
+        btn_confirm = ctk.CTkButton(master=self, text="Confirm", command = lambda: [self.root.AssignCliToMana(ent_clientID.get(),ent_manaID.get()),
+                                                                                    ent_clientID.delete(0,"end"),
+                                                                                    ent_manaID.delete(0,"end")])
         btn_confirm.pack(pady=10)
 
 class PasswordResetPage(Page):
@@ -242,30 +279,39 @@ class PasswordResetPage(Page):
         ent_newPassword = ctk.CTkEntry(master=self, width=300, placeholder_text="New Password", show="*")
         ent_newPassword.pack(pady=10)
         # Confirm Button
-        btn_confirm = ctk.CTkButton(master=self, text="Confirm",command = lambda: self.root.ResetUserPassword(ent_userID.get(),ent_newPassword.get()))
+        btn_confirm = ctk.CTkButton(master=self, text="Confirm",command = lambda: [self.root.ResetUserPassword(ent_userID.get(),ent_newPassword.get()),
+                                                                                    ent_userID.delete(0,"end"),
+                                                                                    ent_newPassword.delete(0,"end")])
         btn_confirm.pack(pady=10)
 
 class RequestManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
+        
         self.grid_columnconfigure(0,weight = 1)
         self.grid_rowconfigure(2,weight = 1)
-
+        self.access = perm.ACCESS_REQUEST_MANAGEMENT
+        
         lbl_reqmanagement = ctk.CTkLabel(self, text="Request Management")
         lbl_reqmanagement.grid(row = 0, column = 0)
 
         #set Parent grid
         frame_button = ctk.CTkFrame(master = self, height=100,width=750) #frame hosting buttons
         frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_button.columnconfigure(0,weight = 1)
+        frame_button.columnconfigure(1,weight = 1)
         frame_button.rowconfigure(0,weight = 1)
         frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
         frame_table.columnconfigure(6,weight = 1)
         frame_table.rowconfigure(10,weight = 1)
 
+       
         btn_new_req = ctk.CTkButton(master=frame_button, text = "Create New Request", command=lambda: self.root.DisplayPage(PageTypes.REQUEST_CREATION))
-        btn_new_req.grid(row = 0, column = 0)
+        btn_new_req.grid(row = 1, column = 0)
+        
+         #define filter button to view user-generated requests
+        chkbx_show_created = ctk.CTkCheckBox(master=frame_button, text = "Show My Requests")
+        chkbx_show_created.grid(row=0,column = 0,sticky = "nw")
        
         #initialize table header
         lbl_id = ctk.CTkLabel(master = frame_table, text = "Request ID")
@@ -311,6 +357,8 @@ class RequestReviewPage(Page):
         Page.__init__(self, root, *args, **kwargs)
         self.grid_columnconfigure(0,weight = 1)
         self.grid_rowconfigure(2,weight = 1)
+        self.access = perm.ACCESS_REQUEST_REVIEW
+
 
         lbl_reqmanagement = ctk.CTkLabel(self, text="Request Review")
         lbl_reqmanagement.grid(row = 0, column = 0)
@@ -319,23 +367,27 @@ class RequestReviewPage(Page):
         frame_bottom = ctk.CTkFrame(master = self, height=100,width=750) 
         frame_bottom.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
         frame_bottom.columnconfigure(2,weight = 1)
-        frame_bottom.rowconfigure(0,weight = 1)
+        frame_bottom.rowconfigure(1,weight = 1)
         frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
         frame_table.columnconfigure(6,weight = 1)
         frame_table.rowconfigure(10,weight = 1)
         
+        #define filter to show assigned requests
+        chkbx_show_assigned = ctk.CTkCheckBox(master = frame_bottom, text = "Show Assigned")
+        chkbx_show_assigned.grid(row = 0, column = 0, sticky = "nw")
+
         #configure list for drop down list
         list = ['this','is','a','test']
         requestDropDown = ctk.CTkComboBox(master = frame_bottom, values = list)
         requestDropDown.set("Select a Request")
-        requestDropDown.grid(row = 0, column = 0)
+        requestDropDown.grid(row = 1, column = 0)
 
         #define buttons for acepting/rejecting requests
         accept_btn = ctk.CTkButton(master = frame_bottom, text = "Accept",text_color= "green")
-        accept_btn.grid(row = 0, column = 1, padx = 15)
+        accept_btn.grid(row = 1, column = 1, padx = 15)
         reject_btn = ctk.CTkButton(master = frame_bottom, text = "Reject",text_color= "red")
-        reject_btn.grid(row = 0, column = 2, padx = 15)
+        reject_btn.grid(row = 1, column = 2, padx = 15)
 
        #initialize table header
         lbl_id = ctk.CTkLabel(master = frame_table, text = "Request ID")
@@ -359,8 +411,10 @@ class RequestReviewPage(Page):
 class QuoteManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
+        
         self.grid_columnconfigure(0,weight = 1)
         self.grid_rowconfigure(2,weight = 1)
+        self.access = perm.ACCESS_QUOTE_MANAGEMENT
 
         lbl_reqmanagement = ctk.CTkLabel(self, text="Quote Management")
         lbl_reqmanagement.grid(row = 0, column = 0)
@@ -410,6 +464,7 @@ class SupplierManagementPage(Page):
         Page.__init__(self, root, *args, **kwargs)
         self.grid_columnconfigure(0,weight = 1)
         self.grid_rowconfigure(2,weight = 1)
+        self.access = perm.ACCESS_SUPPLIER_MANAGEMENT
 
         lbl_reqmanagement = ctk.CTkLabel(self, text="Supplier Management")
         lbl_reqmanagement.grid(row = 0, column = 0)
