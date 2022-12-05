@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+import sys
 
 class Create_Database:
             
@@ -81,6 +82,13 @@ class Create_Database:
         if user_data == []:
             raise Exception(f"User ({user_id}) not found in database")
         return user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
+
+    def get_all_requests(self):
+        query_get_request = """SELECT * FROM PROCUREMENT_REQUEST"""
+        request_data = self.read_query(connection, query_get_request)
+        if request_data == []:
+            raise Exception(f"No Requests found in database")
+        return [[i[1], i[2], i[3], i[4], i[5], i[6], i[7]] for i in request_data]
 
     def add_user(self, name, user_id, password, user_type):
         query_add_user = """ INSERT INTO USER VALUES (default, '%s', '%s', '%s', '%s')"""%(name, user_id, password, user_type)    
@@ -187,6 +195,38 @@ class Create_Database:
                 self.read_query(connection,delete_quote_query)
 
 
+
+    def get_supplier_requests(self, supplier_ID):
+        get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
+        get_item = self.read_query(connection, get_item_query)
+        get_requests_query = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.itemName = "%s" """%(get_item[0][0])
+        get_requests = self.read_query(connection, get_requests_query)
+        return get_requests
+    
+    def get_item(self, supplier_ID, requestNUM):
+        get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
+        get_item = self.read_query(connection, get_item_query)
+        get_requests_query = """SELECT itemName, quantity FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" AND PROCUREMENT_REQUEST.itemName = "%s" """%(requestNUM, get_item[0][0])
+        get_requests = self.read_query(connection, get_requests_query)
+        return get_requests[0][0], get_requests[0][1]
+    
+    def add_new_quote(self, quote_id, request_number, price, supplier_id):
+        query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
+        self.execute_query(connection, query_add_quote)
+    
+    # finding the suppliers that provide the item you are looking for            
+    def get_suppliers(itemName):
+        query_get_supplier = """ SELECT supplierID FROM COMPANY WHERE %s = COMPANY.productType """ %(itemName)
+        supplier_data = DB.read_query(connection, query_get_supplier)
+        return  [[i[1]] for i in supplier_data]
+
+# compare quotes from suppliers and take the lowest offering 
+    def compare_quote():
+        query_compare_quote = """ SELECT * FROM QUOTE ORDER BY QUOTE.price ASC """ 
+        compare_quote_data = DB.read_query(connection, query_compare_quote)
+        return compare_quote_data[0][1], compare_quote_data[1][1]
+        
+        
     #DESIGNING QUERIES TO BUILD DATABASE
 
     create_table_user =                """CREATE TABLE USER(
@@ -214,7 +254,7 @@ class Create_Database:
                                             quoteID VARCHAR(10) PRIMARY KEY NOT NULL,
                                             requestID VARCHAR(20),
                                             price FLOAT(7, 2),
-                                            supplierName VARCHAR(100) REFERENCES USER(name),
+                                            supplierID VARCHAR(10) REFERENCES USER(userID),
                                             INDEX(id),
                                             FOREIGN KEY (requestID) REFERENCES PROCUREMENT_REQUEST(requestNumber)
                                             ON DELETE CASCADE)"""
@@ -239,7 +279,8 @@ class Create_Database:
                                             )"""
 
 
-DB = Create_Database('localhost', 'root', "star26", "SOEN341")
+mysql_password = sys.argv[1]
+DB = Create_Database('localhost', 'root', mysql_password, "SOEN341")
 connection = DB.connect_to_database()
 
 DB.execute_query(connection, DB.create_table_user)

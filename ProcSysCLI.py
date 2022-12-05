@@ -211,7 +211,6 @@ class ProcSysCLI(cmd.Cmd):
 
         except Exception as e:
             print(f"ERROR: {str(e)}")
-        
 
 #Main program loop
 if __name__ == '__main__':
