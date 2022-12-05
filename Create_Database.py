@@ -112,7 +112,7 @@ class Create_Database:
         self.execute_query(connection, query_add_request)
 
     def assign_new_password(self,user_ID,new_pw):
-        query_update_request = "UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
+        query_update_request = """UPDATE USER SET password = '%s' WHERE userID = '%s'""" %(new_pw,user_ID)
         self.execute_query(connection, query_update_request)
     # given a userID (of a worker at the company), return the worker's ManagerID
     def get_manager_from_client(self, clientID: str):
@@ -169,11 +169,11 @@ class Create_Database:
 
     #set the status of a request (sent to supplier,auto approved,sent to manager, approved by manager, denied by manager)
     def edit_request_status(self, request_id,status):
-        get_request_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = '%s'"""%(request_id)
+        get_request_query = """SELECT * FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id) #"UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
         request = self.read_query(connection,get_request_query)
         if request == []:
             raise Exception (f"Error: request ({request_id}) does not exist in database")
-        edit_request_status_query = """"UPDATE PROCUREMENT_REQUEST SET status = '%d' WHERE requestNumber = '%s'" """%(status, request_id)
+        edit_request_status_query = """UPDATE PROCUREMENT_REQUEST SET status = '%d' WHERE requestNumber = '%s' """%(status, request_id)
         self.read_query(connection, edit_request_status_query)
     #return all quotes in the database
     def get_all_quotes(self):
@@ -187,7 +187,7 @@ class Create_Database:
         quote = self.read_query(connection,get_quote_query)
         if quote == []:
             raise Exception (f"Error: quote ({quote_id}) does not exist in database")
-        approve_quote_query = """"UPDATE PROCUREMENT_REQUEST SET acceptedQuoteID = '%s' WHERE requestNumber = '%s'" """%(quote_id, request_id)
+        approve_quote_query = """UPDATE PROCUREMENT_REQUEST SET acceptedQuoteID = '%s' WHERE requestNumber = '%s' """%(quote_id, request_id)
         self.read_query(connection,approve_quote_query)
     #delete all quotes from a certain request
     def delete_all_quotes(self,request_id):

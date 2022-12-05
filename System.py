@@ -111,39 +111,36 @@ class ProcurementSystem:
             print(temp)
     
     # supplier defines the quote for a given request
-    def CreateQuote(self,Price , requestNumber):
+    def CreateQuote(self, Price, requestNumber) -> str:
         # Create quote ID ( use the same as userID logic)
         quote_id_counter = self.database.get_counter_value("QUOTE")
         quote_id = f"Q" + f"{quote_id_counter + 1}".zfill(4)
 
         # fetch the item name and quantity to give it a price
         # if the request number matches then get item name and quantity. 
-        item_name, quantity = self.database.get_item(self.active_user, requestNumber)
-        self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
-        requestID = self.database.get_request_id_from_quote(quote_id)
-        #set the status of the request to "send to manager"
-        self.database.edit_request_status(requestID, status.SENT_TO_MANAGER) 
+        self.database.add_new_quote(quote_id, requestNumber, Price, self.active_user)
         #check if the price is less than 5000, auto-approve if it is 
         if (Price<5000.00):
             self.AutoAcceptQuote(quote_id)
+        return quote_id
 
     #automatically accept a quote by setting the status to "auto accepted", add the quoteID to the approvedQuoteID
     #and delete all other quotes for the given request
     def AutoAcceptQuote(self, quote_id):
         requestID = self.database.get_request_id_from_quote(quote_id)
-        self.database.edit_request_status(requestID, status.AUTOMATICALLY_APPROVED)
+        self.database.edit_request_status(requestID, status.AUTOMATICALLY_APPROVED.value)
         self.database.quote_approved(quote_id,requestID)
         self.database.delete_all_other_quotes(requestID,quote_id)
 
 
     #given the quoteID, accept a procurement request, deleting all other quotes for the request
-    def ManagerAcceptQuote(self,quote_id):
+    def ManagerAcceptQuote(self, quote_id):
         requestID = self.database.get_request_id_from_quote(quote_id)
-        self.database.edit_request_status(requestID, status.APPROVED_BY_MANAGER)
+        self.database.edit_request_status(requestID, status.APPROVED_BY_MANAGER.value)
         self.database.quote_approved(quote_id,requestID)
         self.database.delete_all_other_quotes(requestID,quote_id)
     
     #given the requestID, delete all the quotes associated with it and set the status to "denied"
-    def ManagerDenyRequest(self,request_id):
-        self.database.edit_request_status(request_id, status.DENIED_BY_MANAGER)
+    def ManagerDenyRequest(self, request_id):
+        self.database.edit_request_status(request_id, status.DENIED_BY_MANAGER.value)
         self.database.delete_all_quotes(request_id)

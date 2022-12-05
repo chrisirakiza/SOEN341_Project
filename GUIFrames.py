@@ -397,16 +397,15 @@ class RequestReviewPage(Page):
         chkbx_show_assigned = ctk.CTkCheckBox(master = frame_bottom, text = "Show Assigned")
         chkbx_show_assigned.grid(row = 0, column = 0, sticky = "nw")
 
-        #configure list for drop down list
-        list = ['this','is','a','test']
-        requestDropDown = ctk.CTkComboBox(master = frame_bottom, values = list)
-        requestDropDown.set("Select a Request")
-        requestDropDown.grid(row = 1, column = 0)
+        quoteIDField = ctk.CTkEntry(master = frame_bottom, width=150, placeholder_text="Quote/Request ID")
+        quoteIDField.grid(row = 1, column = 0)
 
         #define buttons for acepting/rejecting requests
-        accept_btn = ctk.CTkButton(master = frame_bottom, text = "Accept",text_color= "green")
+        accept_btn = ctk.CTkButton(master = frame_bottom, text = "Accept Quote",text_color= "green", command=lambda:[self.root.AcceptQuote(quoteIDField.get()),
+                                                                                    quoteIDField.delete(0,"end")])
         accept_btn.grid(row = 1, column = 1, padx = 15)
-        reject_btn = ctk.CTkButton(master = frame_bottom, text = "Reject",text_color= "red")
+        reject_btn = ctk.CTkButton(master = frame_bottom, text = "Reject Request",text_color= "red", command=lambda:[self.root.RejectRequest(quoteIDField.get()),
+                                                                                    quoteIDField.delete(0,"end")])
         reject_btn.grid(row = 1, column = 2, padx = 15)
 
        #initialize table header
@@ -431,7 +430,7 @@ class RequestReviewPage(Page):
         
     def LoadPage(self):
         super().LoadPage()
-        self.root.gui_data.UpdateQuotesManagerData(self.sys)
+        self.root.gui_data.UpdateQuotesManagerData(self.root.sys)
         self.PopulateTable()
     
     def PopulateTable(self):
@@ -470,16 +469,16 @@ class QuoteManagementPage(Page):
         self.frame_table.rowconfigure(self.tableRows, weight = 1)
 
         #configure list for drop down list
-        list = ['this','is','a','test']
-        requestDropDown = ctk.CTkComboBox(master = frame_bottom, values = list)
-        requestDropDown.set("Select a Request")
-        requestDropDown.grid(row = 0,column = 0, sticky = "w", pady = 15)
+        requestIDField = ctk.CTkEntry(master = frame_bottom, width=100, placeholder_text="Request ID")
+        requestIDField.grid(row = 0,column = 0, sticky = "w", pady = 15, padx=15)
 
         priceTextField = ctk.CTkEntry(master = frame_bottom, width=100, placeholder_text="Quote Price")
-        priceTextField.grid(row = 1, column = 1, sticky = "n", pady = 15)
+        priceTextField.grid(row = 1, column = 1, sticky = "n", pady = 15, padx=15)
 
-        sendButton = ctk.CTkButton(master = frame_bottom,text = "Send Quote")
-        sendButton.grid(row = 2, column = 2, sticky = "n", pady = 15)
+        sendButton = ctk.CTkButton(master = frame_bottom,text = "Send Quote", command=lambda:[self.root.CreateQuote(requestIDField.get(),priceTextField.get()),
+                                                                                    requestIDField.delete(0,"end"),
+                                                                                    priceTextField.delete(0, "end")])
+        sendButton.grid(row = 2, column = 2, sticky = "n", pady = 15, padx=15)
        
         lbl_id = ctk.CTkLabel(master = self.frame_table, text = "Request ID")
         lbl_id.grid(row = 0, column = 0)
@@ -491,7 +490,7 @@ class QuoteManagementPage(Page):
         
     def LoadPage(self):
         super().LoadPage()
-        self.root.gui_data.UpdateRequestDataSuppliers(self.sys)
+        self.root.gui_data.UpdateRequestDataSuppliers(self.root.sys)
         self.PopulateTable()
         
     def PopulateTable(self):

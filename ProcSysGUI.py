@@ -172,6 +172,69 @@ class ProcSysGUI(ctk.CTk):
             pu.popupMessage(f"Success! Request {req_no} has been generated")
         except Exception as e:
             pu.popupError(e)
+    
+    def CreateQuote(self, reqID: str, price: str):
+        '''Create quote'''
+        if (not self.sys.CheckPermissions(perm.CREATE_QUOTE)):
+            pu.popupError("Permission Denied!")
+            return
+        # Data validation
+        if (reqID == ""):
+            pu.popupError("Request ID required")
+            return
+        if (price == ""):
+            pu.popupError("Price required")
+            return
+        price = float(price)
+        price = round(price, 2)
+        
+        if (price <= 0) or (price > 9999999):
+            pu.popupError("Invalid price")
+            return
+
+        #reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID
+        try:
+            # reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(f"{reqID}")
+            quoteID = self.sys.CreateQuote(price, reqID)
+            self.gui_data.UpdateQuotesManagerData(self.sys)
+            pu.popupMessage(f"Success! Quote {quoteID} has been generated")
+        except Exception as e:
+            pu.popupError(e)
+    
+    def AcceptQuote(self, quoteID: str) -> None:
+        if(not self.sys.CheckPermissions(perm.ACCEPT_REJECT)):
+            pu.popupError("Permission Denied!")
+            return
+        if (quoteID == ""):
+            pu.popupError("Quote ID required")
+            return
+        try:
+            activeUserID = self.sys.active_user
+            reqID = self.sys.database.get_request_id_from_quote(quoteID)
+            reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(reqID)
+            if (activeUserID != assignedManagerID):
+                raise Exception(f"Active user is not assigned to request {reqID}")
+            self.sys.ManagerAcceptQuote(quoteID)
+            self.pageDict[self.active_page].LoadPage()
+        except Exception as e:
+            pu.popupError(e)
+
+    def RejectRequest(self, reqID: str) -> None:
+        if(not self.sys.CheckPermissions(perm.ACCEPT_REJECT)):
+            pu.popupError("Permission Denied!")
+            return
+        if (reqID == ""):
+            pu.popupError("Request ID required")
+            return
+        try:
+            activeUserID = self.sys.active_user
+            reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(reqID)
+            if (activeUserID != assignedManagerID):
+                raise Exception(f"Active user is not assigned to request {reqID}")
+            self.sys.ManagerDenyRequest(reqID)
+            self.pageDict[self.active_page].LoadPage()
+        except Exception as e:
+            pu.popupError(e)
 
 if __name__ == "__main__": 
     app = ProcSysGUI()

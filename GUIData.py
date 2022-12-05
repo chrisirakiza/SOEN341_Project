@@ -123,7 +123,7 @@ class GUIData():
             supplierID = ctk.StringVar()
             supplierID.set(value=quote[3])
 
-            request = sys.database.get_request(reqID)
+            request = sys.database.get_request(f"{quote[1]}")
 
             #reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID
             managerID = ctk.StringVar()
