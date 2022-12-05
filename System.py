@@ -84,7 +84,7 @@ class ProcurementSystem:
     #create Procurement Request
     def CreateRequest(self,client_id, item, quantity):
         request_counter = self.database.get_counter_value("PROCUREMENT_REQUEST")
-        reqNum = f"22" + f"{request_counter + 1}".zfill(6)
+        reqNum = f"R" + f"{request_counter + 1}".zfill(6)
         stat = status.SENT_TO_SUPPLIER
         managerID = self.database.get_manager_from_client(client_id)
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
@@ -107,7 +107,7 @@ class ProcurementSystem:
     def CreateQuote(self,Price , requestNumber):
         # Create quote ID ( use the same as userID logic)
         quote_id_counter = self.database.get_counter_value("QUOTE")
-        quote_id = f"{type.name[0]}" + f"{quote_id_counter + 1}".zfill(4)
+        quote_id = f"Q" + f"{quote_id_counter + 1}".zfill(4)
         # fetch the item name and quantity to give it a price
         # if the request number matches then get item name and quantity. 
         item_name, quantity = self.database.get_item(self.active_user, requestNumber)
