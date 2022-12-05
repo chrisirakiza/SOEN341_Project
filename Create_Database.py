@@ -89,6 +89,7 @@ class Create_Database:
     def assign_manager_to_client(self, clientID: str, managerID: str):
         self.execute_query(connection, """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID))
 
+    #add a new procurement request to the database 
     def add_procurement_request(self, rnum, item, quantity, client_id, manager_id, status):
         query_add_request = """INSERT INTO PROCUREMENT_REQUEST VALUES (default, '%s', '%s', %d, '%s', '%s', %d, default)""" %(rnum, item, int(quantity), client_id, manager_id, status.value)
         self.execute_query(connection, query_add_request)
@@ -96,33 +97,29 @@ class Create_Database:
     def assign_new_password(self,user_ID,new_pw):
         query_update_request = "UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
         self.execute_query(connection, query_update_request)
-
+    # given a userID (of a worker at the company), return the worker's ManagerID
     def get_manager_from_client(self, clientID: str):
         query_get_manager = """SELECT managedBy FROM MANAGER WHERE MANAGER.clientID = '%s'""" %(clientID)
         managerID = self.read_query(connection, query_get_manager)
         if managerID == []:
             raise Exception(f"User {clientID} does not have an assigned manager")
         return managerID[0][0]
-
+    #query the database for a procurement request given its ID
     def get_procurement_request(self, procurement_id: int):
         query_get_request = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" """ %(procurement_id)
         request_data = self.read_query(connection, query_get_request)
         if request_data == []:
             raise Exception(f"Request ({procurement_id}) not found in database")
         return request_data[0][1], request_data[0][2], request_data[0][3], request_data[0][4], request_data[0][5], request_data[0][6], request_data[0][7]
-
+    #query the database for the status of a procurement request given its ID
     def get_request_status(self, procurement_id:int):
         request_data = self.get_procurement_request(procurement_id)
         if request_data == []:
             raise Exception(f"Request ({procurement_id}) not found in database")
         return request_data[0][6]
         
+
     
-    
-
-
-
-
     def get_supplier_requests(self, supplier_ID):
         get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
         get_item = self.read_query(connection, get_item_query)
@@ -135,23 +132,59 @@ class Create_Database:
         get_item = self.read_query(connection, get_item_query)
         get_requests_query = """SELECT itemName, quantity FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" AND PROCUREMENT_REQUEST.itemName = "%s" """%(requestNUM, get_item[0][0])
         get_requests = self.read_query(connection, get_requests_query)
+        if get_requests == []:
+            raise Exception (f"Item ({requestNUM}) not found in database")
         return get_requests[0][0], get_requests[0][1]
     
+    #add a new quote to the database
     def add_new_quote(self, quote_id, request_number, price, supplier_id):
         query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
         self.execute_query(connection, query_add_quote)
 
+    #given a quoteID, return the requestID associated with it
     def get_request_id_from_quote(self, quote_id):
         get_quote_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = "%s" """%(quote_id)
         quote_data = self.read_query(connection, get_quote_query)
+        if quote_data == []:
+            raise Exception (f"Error: quote ({quote_id}) does not exist in database")
         request_id = quote_data[0][2]
         return request_id
 
+    #set the status of a request (sent to supplier,auto approved,sent to manager, approved by manager, denied by manager)
     def edit_request_status(self, request_id,status):
-        edit_request_status_query = """EDIT status SET "%d" WHERE PROCUREMENT_REQUEST.requestNumber = "%s" """%(status, request_id)
+        get_request_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = '%s'"""%(request_id)
+        request = self.read_query(connection,get_request_query)
+        if request == []:
+            raise Exception (f"Error: request ({request_id}) does not exist in database")
+        edit_request_status_query = """"UPDATE PROCUREMENT_REQUEST SET status = '%d' WHERE requestNumber = '%s'" """%(status, request_id)
         self.read_query(connection, edit_request_status_query)
+    #return all quotes in the database
+    def get_all_quotes(self):
+        query_get_quotes = """SELECT * FROM QUOTE"""
+        quote_data = self.read_query(connection, query_get_quotes)
+        return [[i[1], i[2], i[3], i[4]] for i in quote_data]
+    #adds the quoteID to the acceptedQuoteID value in the procurementRequest table in the database
+    def quote_approved(self,quote_id,request_id):
+        get_quote_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = '%s'"""%(quote_id)
+        quote = self.read_query(connection,get_quote_query)
+        if quote == []:
+            raise Exception (f"Error: quote ({quote_id}) does not exist in database")
+        approve_quote_query = """"UPDATE PROCUREMENT_REQUEST SET acceptedQuoteID = '%s' WHERE requestNumber = '%s'" """%(quote_id, request_id)
+        self.read_query(connection,approve_quote_query)
+    #delete all quotes from a certain request
+    def delete_all_quotes(self,request_id):
+        delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id)
+        self.read_query(connection,delete_quote_query)
 
-
+        
+    #delete all quotes except the one that's been approved
+    def delete_all_other_quotes(self,quote_id,request_id):
+        get_quote_table = """SELECT * FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id)
+        get_quote = self.read_query(connection,get_quote_table)
+        for i,quote in enumerate(get_quote):
+            if (get_quote[i][1]!=quote_id):
+                delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.quoteID ='%s'"""%(get_quote[i][1])
+                self.read_query(connection,delete_quote_query)
 
 
     #DESIGNING QUERIES TO BUILD DATABASE

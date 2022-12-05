@@ -121,12 +121,31 @@ class ProcurementSystem:
         # if the request number matches then get item name and quantity. 
         item_name, quantity = self.database.get_item(self.active_user, requestNumber)
         self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
-        if (Price<5000):
+        requestID = self.database.get_request_id_from_quote(quote_id)
+        #set the status of the request to "send to manager"
+        self.database.edit_request_status(requestID, status.SENT_TO_MANAGER) 
+        #check if the price is less than 5000, auto-approve if it is 
+        if (Price<5000.00):
             self.AutoAcceptQuote(quote_id)
 
+    #automatically accept a quote by setting the status to "auto accepted", add the quoteID to the approvedQuoteID
+    #and delete all other quotes for the given request
     def AutoAcceptQuote(self, quote_id):
         requestID = self.database.get_request_id_from_quote(quote_id)
         self.database.edit_request_status(requestID, status.AUTOMATICALLY_APPROVED)
-        print(f"Quote has automatically been approved")
+        self.database.quote_approved(quote_id,requestID)
+        self.database.delete_all_other_quotes(requestID,quote_id)
 
+
+    #given the quoteID, accept a procurement request, deleting all other quotes for the request
+    def ManagerAcceptQuote(self,quote_id):
+        requestID = self.database.get_request_id_from_quote(quote_id)
+        self.database.edit_request_status(requestID, status.APPROVED_BY_MANAGER)
+        self.database.quote_approved(quote_id,requestID)
+        self.database.delete_all_other_quotes(requestID,quote_id)
+    
+    #given the requestID, delete all the quotes associated with it and set the status to "denied"
+    def ManagerDenyRequest(self,request_id):
+        self.database.edit_request_status(request_id, status.DENIED_BY_MANAGER)
+        self.database.delete_all_quotes(request_id)
         
