@@ -23,6 +23,7 @@ class FunctionTypes(Enum):
     ACCESS_QUOTE_MANAGEMENT = 7
     ACCESS_SUPPLIER_MANAGEMENT = 8
     ACCESS_USER_MANAGEMENT = 9
+    CREATE_QUOTE = 10
 
 
 #################################################################################################
@@ -45,10 +46,10 @@ class Permissions:
         FunctionTypes.ASSIGN_CLI_TO_MANA: {UT.ADMIN: True,UT.MANAGER: True},
         FunctionTypes.CREATE_REQUEST: {UT.CLIENT: True},
         FunctionTypes.RESET_PASSWORD: {UT.ADMIN: True},
+        #FunctionTypes.CREATE_REQUEST: {UT.SUPPLIER:True} #FIX
         FunctionTypes.ACCESS_REQUEST_MANAGEMENT: {UT.ADMIN: True,UT.CLIENT: True,UT.MANAGER: True},
         FunctionTypes.ACCESS_REQUEST_REVIEW: {UT.ADMIN: True, UT.MANAGER: True},
         FunctionTypes.ACCESS_QUOTE_MANAGEMENT: {UT.ADMIN: True, UT.SUPPLIER: True},
         FunctionTypes.ACCESS_SUPPLIER_MANAGEMENT: {UT.ADMIN: True, UT.SUPPLIER: True},
         FunctionTypes.ACCESS_USER_MANAGEMENT: {UT.ADMIN: True, UT.CLIENT: True, UT.MANAGER : True, UT.SUPPLIER: True}
-        
     }
