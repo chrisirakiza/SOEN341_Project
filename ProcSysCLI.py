@@ -136,7 +136,7 @@ class ProcSysCLI(cmd.Cmd):
         Usage: display requests
         '''
         #check for permissions
-        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+        if (not(self.sys.CheckPermissions(perm.ACCESS_REQUEST_MANAGEMENT))):
             print("Permission Denied")
             return
         try:
@@ -150,7 +150,7 @@ class ProcSysCLI(cmd.Cmd):
         '''
 
         #check for permissions
-        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+        if (not(self.sys.CheckPermissions(perm.ACCESS_REQUEST_MANAGEMENT))):
             print("Permission Denied")
             return
         try:
@@ -175,7 +175,7 @@ class ProcSysCLI(cmd.Cmd):
         Usage: status <request-id>
         '''
         #check for permissions
-        if (not(self.sys.CheckPermissions(perm.CREATE_REQUEST))):
+        if (not(self.sys.CheckPermissions(perm.ACCESS_REQUEST_MANAGEMENT))):
             print("Permission Denied")
             return
         try:
