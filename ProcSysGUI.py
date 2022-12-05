@@ -15,6 +15,7 @@ class ProcSysGUI(ctk.CTk):
         self.sys = System.ProcurementSystem()
         self.gui_data = GUIData.GUIData()
         self.gui_data.UpdateUserData(self.sys)
+        self.gui_data.UpdateRequestData(self.sys)
 
         self.UpdateActiveUser()
 
@@ -148,9 +149,27 @@ class ProcSysGUI(ctk.CTk):
         except Exception as e:
             pu.popupError(e)
        
-        
-
-
+    def CreateProcRequest(self, item: str, qty: str):
+        '''Creates a Procurement Request'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.CREATE_REQUEST)):
+            pu.popupError("Permission Denied!")
+            return
+        # Data validation
+        if (item == ""):
+            pu.popupError("Item required")
+            return
+        if (qty == ""):
+            pu.popupError("Quantity required")
+            return
+        # call Create Request
+        name, userID, pwd, userType = self.sys.GetUserValues(self.sys.active_user)
+        try:
+            req_no = self.sys.CreateRequest(userID,item,qty)
+            self.gui_data.UpdateRequestData(self.sys)
+            pu.popupMessage(f"Success! Request {req_no} has been generated")
+        except Exception as e:
+            pu.popupError(e)
 
 if __name__ == "__main__": 
     app = ProcSysGUI()

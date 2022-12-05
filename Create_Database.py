@@ -83,6 +83,14 @@ class Create_Database:
             raise Exception(f"User ({user_id}) not found in database")
         return user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
 
+    def get_all_requests(self):
+        query_get_request = """SELECT * FROM PROCUREMENT_REQUEST"""
+        request_data = self.read_query(connection, query_get_request)
+        print(request_data)
+        if request_data == []:
+            raise Exception(f"No Requests found in database")
+        return [[i[1], i[2], i[3], i[4], i[5], i[6], i[7]] for i in request_data]
+
     def add_user(self, name, user_id, password, user_type):
         query_add_user = """ INSERT INTO USER VALUES (default, '%s', '%s', '%s', '%s')"""%(name, user_id, password, user_type)    
         self.execute_query(connection, query_add_user)
