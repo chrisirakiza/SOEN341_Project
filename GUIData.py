@@ -10,8 +10,10 @@ class GUIData():
             "type": ctk.StringVar()
         }
 
-        # Contains all user data, in the format for the user management table
+        # Contains all user data and request data, in the format for the user management and request management/review table
         self.users_data = []
+        self.requests_data = []
+
     
     def UpdateUserData(self, sys) -> None:
         '''Update the list of all user data in GUI Data structure'''
@@ -52,3 +54,45 @@ class GUIData():
             # Add user to users data
             user_data = [userID, userName, userType, userManager, userCompany]
             self.users_data.append(user_data)
+
+    def UpdateRequestData(self, sys) -> None:
+        '''Update the list of all requests data in GUI Data structure'''
+        # Reset request data to blank list
+        self.requests_data = []
+        # Get list of requests and begin parsing data
+        try:
+            requestList = sys.database.get_all_requests()
+        except Exception as e:
+            return
+        for request in requestList:
+            # Get baseline Request information
+            requestID = ctk.StringVar()
+            requestID.set(value=request[0])
+            itemName = ctk.StringVar()
+            itemName.set(value=request[1])
+            itemQty = ctk.StringVar()
+            itemQty.set(value=request[2])
+            generatedBy = ctk.StringVar()
+            generatedBy.set(value=request[3])
+            assignedMana = ctk.StringVar()
+            assignedMana.set(value=request[4])
+            # Checks Request Status
+            
+            status = ctk.StringVar()
+            if (request[5] == 0):
+                status.set(value="Waiting for Supplier Response")
+            if (request[5] == 1):
+                status.set(value="Waiting for Manager Approval")
+            if (request[5] == 2):
+                status.set(value="Accepted")
+            if (request[5] == 3):
+                status.set(value="Refused")
+            
+            # Checks for Quote
+            acceptedQuote = ctk.StringVar()
+            acceptedQuote.set(value = request[6])
+            
+            # Add user to users data
+            request_data = [requestID,itemName,itemQty,generatedBy,assignedMana,status,acceptedQuote]
+            self.requests_data.append(request_data)
+            
