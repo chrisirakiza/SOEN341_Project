@@ -14,7 +14,7 @@ class GUIData():
         self.users_data = []
         self.requests_data = []
         self.quotes_data = []
-        # self.requests_data_suppliers = []
+        self.requests_data_suppliers = []
 
     def UpdateUserData(self, sys) -> None:
         '''Update the list of all user data in GUI Data structure'''
@@ -82,12 +82,16 @@ class GUIData():
             status = ctk.StringVar()
             if (request[5] == 0):
                 status.set(value="Waiting for Supplier Response")
-            if (request[5] == 1):
-                status.set(value="Waiting for Manager Approval")
-            if (request[5] == 2):
+            elif (request[5] == 1):
+                status.set(value="Approved by System")
+            elif (request[5] == 2):
+                status.set(value="Awaiting Manager Response")
+            elif (request[5] == 3):
                 status.set(value="Accepted")
-            if (request[5] == 3):
-                status.set(value="Refused")
+            elif (request[5] == 4):
+                status.set(value="Denied")
+            else:
+                status.set(value="N/A")
             
             # Checks for Quote
             acceptedQuote = ctk.StringVar()
@@ -134,4 +138,32 @@ class GUIData():
             # Add user to quote data
             quote_data = [quoteID, reqID, itemName, itemQuantity, price, generatedBy, managerID, supplierID]
             self.quotes_data.append(quote_data)
+    
+    def UpdateRequestDataSuppliers(self, sys) -> None:
+        '''Update the list of supplier requests data in GUI Data structure'''
+        # Reset request data to blank list
+        self.requests_data_suppliers = []
+        # Get list of requests and begin parsing data
+        try:
+            requestList = sys.database.get_all_requests()
+        except Exception as e:
+            return
+        
+        for request in requestList:
+            # Check that req is Waiting for Supplier Response
+            status = request[5]
+            if status != 0:
+                continue
+
+            # Get baseline Request information
+            requestID = ctk.StringVar()
+            requestID.set(value=request[0])
+            itemName = ctk.StringVar()
+            itemName.set(value=request[1])
+            itemQty = ctk.StringVar()
+            itemQty.set(value=request[2])
+            
+            # Add request to users data
+            request_data = [requestID, itemName, itemQty]
+            self.requests_data_suppliers.append(request_data)
             

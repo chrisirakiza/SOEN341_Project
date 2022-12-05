@@ -17,6 +17,7 @@ class ProcSysGUI(ctk.CTk):
         self.gui_data.UpdateUserData(self.sys)
         self.gui_data.UpdateRequestData(self.sys)
         self.gui_data.UpdateQuotesManagerData(self.sys)
+        self.gui_data.UpdateRequestDataSuppliers(self.sys)
 
         self.UpdateActiveUser()
 
