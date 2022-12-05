@@ -13,8 +13,9 @@ class GUIData():
         # Contains all user data and request data, in the format for the user management and request management/review table
         self.users_data = []
         self.requests_data = []
+        self.quotes_data = []
+        # self.requests_data_suppliers = []
 
-    
     def UpdateUserData(self, sys) -> None:
         '''Update the list of all user data in GUI Data structure'''
         # Reset users data to blank list
@@ -95,4 +96,42 @@ class GUIData():
             # Add user to users data
             request_data = [requestID,itemName,itemQty,generatedBy,assignedMana,status,acceptedQuote]
             self.requests_data.append(request_data)
+    
+    def UpdateQuotesManagerData(self, sys) -> None:
+        '''Update the list of manager visible quotes data in GUI Data structure'''
+        # Reset request data to blank list
+        self.quotes_data = []
+
+        # Get list of requests and begin parsing data
+        try:
+            quoteList = sys.database.get_all_quotes()
+        except Exception as e:
+            return
+        
+        for quote in quoteList:
+            # Get baseline quote information
+            quoteID = ctk.StringVar()
+            quoteID.set(value=quote[0])
+            reqID = ctk.StringVar()
+            reqID.set(value=quote[1])
+            price = ctk.StringVar()
+            price.set(value=quote[2])
+            supplierID = ctk.StringVar()
+            supplierID.set(value=quote[3])
+
+            request = sys.database.get_request(reqID)
+
+            #reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID
+            managerID = ctk.StringVar()
+            managerID.set(value=request[4])
+            itemName = ctk.StringVar()
+            itemName.set(value=request[1])
+            itemQuantity = ctk.StringVar()
+            itemQuantity.set(value=request[2])
+            generatedBy = ctk.StringVar()
+            generatedBy.set(value=request[3])
+            
+            # Add user to quote data
+            quote_data = [quoteID, reqID, itemName, itemQuantity, price, generatedBy, managerID, supplierID]
+            self.quotes_data.append(quote_data)
             

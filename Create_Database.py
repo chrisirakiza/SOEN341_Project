@@ -83,6 +83,15 @@ class Create_Database:
             raise Exception(f"User ({user_id}) not found in database")
         return user_data[0][1], user_data[0][2], user_data[0][3], user_data[0][4]
 
+    def get_request(self, reqID: str):
+        '''Returns: reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID'''
+        query_get_request = """SELECT * FROM PROCUREMENT_REQUEST WHERE PROCUREMENT_REQUEST.requestNumber = "%s" """ %(reqID)
+        request_data = self.read_query(connection, query_get_request)
+        if request_data == []:
+            raise Exception(f"Request ({reqID}) not found in database")
+        #reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID
+        return request_data[0][1], request_data[0][2], request_data[0][3], request_data[0][4], request_data[0][5], request_data[0][6], request_data[0][7]
+
     def get_all_requests(self):
         query_get_request = """SELECT * FROM PROCUREMENT_REQUEST"""
         request_data = self.read_query(connection, query_get_request)
@@ -171,6 +180,7 @@ class Create_Database:
         query_get_quotes = """SELECT * FROM QUOTE"""
         quote_data = self.read_query(connection, query_get_quotes)
         return [[i[1], i[2], i[3], i[4]] for i in quote_data]
+        # Quoteid , reqid, price, supplierid
     #adds the quoteID to the acceptedQuoteID value in the procurementRequest table in the database
     def quote_approved(self,quote_id,request_id):
         get_quote_query = """SELECT * FROM QUOTE WHERE QUOTE.quoteID = '%s'"""%(quote_id)
