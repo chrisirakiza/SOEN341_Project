@@ -130,7 +130,8 @@ class ProcSysCLI(cmd.Cmd):
             print(f"Request created with ID {reqID}")
         except Exception as e:
             print(f"ERROR: {str(e)}")
-        
+    
+    
 
 #Main program loop
 if __name__ == '__main__':
