@@ -86,7 +86,6 @@ class Create_Database:
     def get_all_requests(self):
         query_get_request = """SELECT * FROM PROCUREMENT_REQUEST"""
         request_data = self.read_query(connection, query_get_request)
-        print(request_data)
         if request_data == []:
             raise Exception(f"No Requests found in database")
         return [[i[1], i[2], i[3], i[4], i[5], i[6], i[7]] for i in request_data]

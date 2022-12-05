@@ -7,7 +7,7 @@ import PopUp as pu
 from Permissions import FunctionTypes as perm
 
 ctk.set_appearance_mode('dark')
-ctk.set_default_color_theme('green')
+ctk.set_default_color_theme('blue')
 
 class ProcSysGUI(ctk.CTk):
     def __init__(self) -> None:

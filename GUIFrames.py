@@ -333,16 +333,16 @@ class RequestManagementPage(Page):
         self.PopulateTable()
         
     def LoadPage(self):
-            super().LoadPage()
-            self.PopulateTable()
+        super().LoadPage()
+        self.PopulateTable()
         
     def PopulateTable(self):
-            '''Populates the table using GUI data from the root'''
-            print(self.root.gui_data.requests_data)
-            requests_in_database = len(self.root.gui_data.requests_data)
-            for i in range(1, self.table_rows):
-                if (i > requests_in_database):
-                    break
+        '''Populates the table using GUI data from the root'''
+        requests_in_database = len(self.root.gui_data.requests_data)
+        print(f"Lenght: {requests_in_database}")
+        for i in range(1, self.table_rows):
+            if (i > requests_in_database):
+                break
             for j in range (0, self.table_cols):
                 lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.requests_data[i-1][j])
                 lblTemp.grid(row=i, column=j, sticky='EW')

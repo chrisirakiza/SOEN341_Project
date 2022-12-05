@@ -79,14 +79,14 @@ class GUIData():
             # Checks Request Status
             
             status = ctk.StringVar()
-            if (request[5] == "0"):
-                status.set("Waiting for Supplier response")
-            if (request[5] == "1"):
-                status.set("Waiting for Manager Approval")
-            if (request[5] == "2"):
-                status.set("Accepted")
-            if (request[5] == "3"):
-                status.set("Refused")
+            if (request[5] == 0):
+                status.set(value="Waiting for Supplier Response")
+            if (request[5] == 1):
+                status.set(value="Waiting for Manager Approval")
+            if (request[5] == 2):
+                status.set(value="Accepted")
+            if (request[5] == 3):
+                status.set(value="Refused")
             
             # Checks for Quote
             acceptedQuote = ctk.StringVar()
