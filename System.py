@@ -4,6 +4,7 @@ import Permissions as perm
 import Create_Database as db
 from RequestForm import ProcurementRequest as request
 from RequestForm import RequestStatus as status
+import sys
 
 #################################################################################################
 # Class: ProcurementSystem
@@ -22,10 +23,10 @@ from RequestForm import RequestStatus as status
 # 
 #################################################################################################
 
-
 class ProcurementSystem:
     def __init__(self) -> None:
-        self.database = db.Create_Database('localhost', 'root', "sqlpassword", 'SOEN341')
+        mysql_password = sys.argv[1]
+        self.database = db.Create_Database('localhost', 'root', mysql_password, 'SOEN341')
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
         #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
@@ -87,9 +88,13 @@ class ProcurementSystem:
         stat = status.SENT_TO_SUPPLIER
         managerID = self.database.get_manager_from_client(client_id)
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
-        
         return reqNum
     
+    def ResetPassword(self,user_id,new_pw):
+        u_ID = self.database.get_user(user_id)[1]
+        self.database.assign_new_password(u_ID,new_pw)
+        
+
     def supplier_functionality(self):
         if(Users.UserType.ParseUserType(self.active_user) != Users.UserType.SUPPLIER):
             supplier_requests = self.database.get_supplier_requests(self.active_user)
@@ -107,15 +112,3 @@ class ProcurementSystem:
         # if the request number matches then get item name and quantity. 
         item_name, quantity = self.database.get_item(self.active_user, requestNumber)
         self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
-            
-def get_suppliers(itemName):
-    query_get_supplier = """ SELECT supplierID FROM COMPANY WHERE %s = COMPANY.productType """ %(itemName)
-    supplier_data = DB.read_query(connection, query_get_supplier)
-    return  [[i[0]] for i in supplier_data]
-
-def compare_quote():
-    query_compare_quote = """ SELECT * FROM QUOTE ORDER BY QUOTE.price ASC """ 
-    compare_quote_data = DB.read_query(connection, query_compare_quotes)
-    print("Lowest quotes are " + compare_quote_data[0][3] + "from " + compare_quote_data[0][4] + "and " + compare_quote_data[1][3] + "from " + compare_quote_data[1][4])
-        
-        

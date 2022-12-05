@@ -34,10 +34,8 @@ class ProcSysCLI(cmd.Cmd):
     
 
     def do_test(self, arg):
-        '''Test function, used for development purposes'''
-        print(">:)")
-
-
+        '''testin' stuff'''
+   
     def do_user(self, arg):
         '''
         Usage: user [option]
@@ -50,7 +48,7 @@ class ProcSysCLI(cmd.Cmd):
                     -m: Manager
                     -s: Supplier
                 <password>:
-                    defaults to 'password' if not specifies
+                    defaults to 'password' if not specified
         '''
         try:
             commandType = CLIParser.do_user_parse(self, arg)
@@ -67,6 +65,23 @@ class ProcSysCLI(cmd.Cmd):
         except Exception as e:
             print(f"ERROR: {str(e)}")
 
+
+    def do_reset(self,arg):
+        ''' Usage: reset <user-id> <new_password>
+                <new_password>: defaults to 'password' if not specified
+        '''
+        # Check for permissions
+        if(not(self.sys.CheckPermissions(perm.RESET_PASSWORD))):
+            print("Permission Denied")
+            return
+        #Attempt to reset password
+        try:
+            user_ID,password =CLIParser.do_reset_parse(self,arg)
+            print(user_ID)
+            self.sys.ResetPassword(user_ID,password)
+            print(f"User {user_ID} password successfully reset.")
+        except Exception as e:
+            print(f"ERROR: {str(e)}")
 
     def do_assign(self, arg):
         '''

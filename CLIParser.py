@@ -10,6 +10,20 @@ def do_assign_parse(cli_sys, arg):
         managerID = cli_sys.sys.active_user
     return clientID, managerID
 
+def do_reset_parse(cli_sys, arg):
+    params = arg.split()
+    print(len(params))
+    print(params[0])
+    if (len(params) < 1 or len(params) > 2):
+        raise Exception(f"Command expects 1 or 2 passed arguments")
+    if (len(params) == 1):
+        user_ID = params[0]
+        password = "password" #sets default password to 'password' if a new one is not specified
+    else:
+        user_ID = params[0]
+        password = params[1]
+    return user_ID, password
+
 def do_login_parse(cli_sys, arg):
     params = arg.split()
     if (len(params) != 2):
