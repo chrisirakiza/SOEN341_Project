@@ -21,6 +21,8 @@ class PageTypes(Enum):
     PASSWORD_RESET = 9
     REQUEST_CREATION = 10
     ASSIGN_MANAGER = 11
+    CREATE_SUPPLIER_COMPANY = 12
+    ADD_SUPPLIER_ITEMS = 13
 
 class Page(ctk.CTkFrame):
     def __init__(self, root, *args, **kwargs):
@@ -202,6 +204,7 @@ class UserManagementPage(Page):
 
     def LoadPage(self):
         super().LoadPage()
+        self.root.gui_data.UpdateUserData(self.root.sys)
         self.PopulateTable()
 
     def PopulateTable(self):
@@ -209,10 +212,13 @@ class UserManagementPage(Page):
         users_in_database = len(self.root.gui_data.users_data)
         for i in range(1, self.table_rows):
             if (i > users_in_database):
-                break
-            for j in range (0, self.table_cols):
-                lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.users_data[i-1][j])
-                lblTemp.grid(row=i, column=j, sticky='EW')
+                for j in range (0, self.table_cols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, text="")
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+            else:
+                for j in range (0, self.table_cols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.users_data[i-1][j])
+                    lblTemp.grid(row=i, column=j, sticky='EW')
 
 class UserCreationPage(Page):
     def __init__(self, root, *args, **kwargs):
@@ -334,6 +340,7 @@ class RequestManagementPage(Page):
         
     def LoadPage(self):
         super().LoadPage()
+        self.root.gui_data.UpdateRequestData(self.root.sys)
         self.PopulateTable()
         
     def PopulateTable(self):
@@ -342,10 +349,13 @@ class RequestManagementPage(Page):
         print(f"Lenght: {requests_in_database}")
         for i in range(1, self.table_rows):
             if (i > requests_in_database):
-                break
-            for j in range (0, self.table_cols):
-                lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.requests_data[i-1][j])
-                lblTemp.grid(row=i, column=j, sticky='EW')
+                for j in range (0, self.table_cols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, text="")
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+            else:
+                for j in range (0, self.table_cols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.requests_data[i-1][j])
+                    lblTemp.grid(row=i, column=j, sticky='EW')
         
 
 class RequestCreationPage(Page):
@@ -402,10 +412,10 @@ class RequestReviewPage(Page):
 
         #define buttons for acepting/rejecting requests
         accept_btn = ctk.CTkButton(master = frame_bottom, text = "Accept Quote",text_color= "green", command=lambda:[self.root.AcceptQuote(quoteIDField.get()),
-                                                                                    quoteIDField.delete(0,"end")])
+                                                                                    quoteIDField.delete(0,"end"),self.LoadPage()])
         accept_btn.grid(row = 1, column = 1, padx = 15)
         reject_btn = ctk.CTkButton(master = frame_bottom, text = "Reject Request",text_color= "red", command=lambda:[self.root.RejectRequest(quoteIDField.get()),
-                                                                                    quoteIDField.delete(0,"end")])
+                                                                                    quoteIDField.delete(0,"end"),self.LoadPage()])
         reject_btn.grid(row = 1, column = 2, padx = 15)
 
        #initialize table header
@@ -438,10 +448,13 @@ class RequestReviewPage(Page):
         quotes_in_database = len(self.root.gui_data.quotes_data)
         for i in range(1, self.tableRows):
             if (i > quotes_in_database):
-                break
-            for j in range (0, self.tableCols):
-                lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.quotes_data[i-1][j])
-                lblTemp.grid(row=i, column=j, sticky='EW')
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, text="")
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+            else:
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.quotes_data[i-1][j])
+                    lblTemp.grid(row=i, column=j, sticky='EW')
 
 class QuoteManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
@@ -477,7 +490,7 @@ class QuoteManagementPage(Page):
 
         sendButton = ctk.CTkButton(master = frame_bottom,text = "Send Quote", command=lambda:[self.root.CreateQuote(requestIDField.get(),priceTextField.get()),
                                                                                     requestIDField.delete(0,"end"),
-                                                                                    priceTextField.delete(0, "end")])
+                                                                                    priceTextField.delete(0, "end"),self.LoadPage()])
         sendButton.grid(row = 2, column = 2, sticky = "n", pady = 15, padx=15)
        
         lbl_id = ctk.CTkLabel(master = self.frame_table, text = "Request ID")
@@ -491,6 +504,7 @@ class QuoteManagementPage(Page):
     def LoadPage(self):
         super().LoadPage()
         self.root.gui_data.UpdateRequestDataSuppliers(self.root.sys)
+        print(self.root.gui_data.requests_data_suppliers)
         self.PopulateTable()
         
     def PopulateTable(self):
@@ -498,16 +512,21 @@ class QuoteManagementPage(Page):
         requests_in_database = len(self.root.gui_data.requests_data_suppliers)
         for i in range(1, self.tableRows):
             if (i > requests_in_database):
-                break
-            for j in range (0, self.tableCols):
-                lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.requests_data_suppliers[i-1][j])
-                lblTemp.grid(row=i, column=j, sticky='EW')
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, text="")
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+            else:
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.requests_data_suppliers[i-1][j])
+                    lblTemp.grid(row=i, column=j, sticky='EW')
 
 class SupplierManagementPage(Page):
     def __init__(self, root, *args, **kwargs):
         Page.__init__(self, root, *args, **kwargs)
         self.grid_columnconfigure(0,weight = 1)
         self.grid_rowconfigure(2,weight = 1)
+        self.tableRows = 11
+        self.tableCols = 2
         self.access = perm.ACCESS_SUPPLIER_MANAGEMENT
 
         lbl_reqmanagement = ctk.CTkLabel(self, text="Supplier Management")
@@ -518,25 +537,82 @@ class SupplierManagementPage(Page):
         frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
         frame_button.columnconfigure(2,weight = 1)
         frame_button.rowconfigure(0,weight = 1)
-        frame_table = ctk.CTkFrame(master = self) #frame for listing tables
-        frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_table.columnconfigure(1,weight = 1)
-        frame_table.rowconfigure(10,weight = 1)
+        self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
+        self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
+        self.frame_table.columnconfigure(1,weight = 1)
+        self.frame_table.rowconfigure(10,weight = 1)
 
-        btn_new_supplier = ctk.CTkButton(master=frame_button, text = "Add New Supplier")
+        btn_new_supplier = ctk.CTkButton(master=frame_button, text = "Add New Supplier",command=lambda:self.root.DisplayPage(PageTypes.CREATE_SUPPLIER_COMPANY))
         btn_new_supplier.grid(row = 0, column = 0)
-        btn_add_item = ctk.CTkButton(master = frame_button, text = "Add New Item")
+        btn_add_item = ctk.CTkButton(master = frame_button, text = "Add New Item",command=lambda:self.root.DisplayPage(PageTypes.ADD_SUPPLIER_ITEMS))
         btn_add_item. grid(row = 0, column = 1,sticky = "e")
        
-        lbl_id = ctk.CTkLabel(master = frame_table, text = "Supplier")
+        lbl_id = ctk.CTkLabel(master = self.frame_table, text = "Supplier")
         lbl_id.grid(row = 0, column = 0)
-        lbl_item = ctk.CTkLabel(master = frame_table, text = "Items")
+        lbl_item = ctk.CTkLabel(master = self.frame_table, text = "Items")
         lbl_item.grid(row = 0, column = 1)
-     
-        for i in range (1, 11):
-            for j in range (0,2):
-                lblTemp = ctk.CTkLabel(master = frame_table, text = "pizza")
-                lblTemp.grid(row = i, column = j)
+        self.PopulateTable()
+        
+    def LoadPage(self):
+        super().LoadPage()
+        self.root.gui_data.UpdateSupplierCompanyData(self.root.sys)
+        self.PopulateTable()
+        
+    def PopulateTable(self):
+        '''Populates the table using GUI data from the root'''
+        companies_in_database = len(self.root.gui_data.supplier_company_data)
+        for i in range(1, self.tableRows):
+            if (i > companies_in_database):
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, text="")
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+            else:
+                for j in range (0, self.tableCols):
+                    lblTemp = ctk.CTkLabel(master=self.frame_table, textvariable=self.root.gui_data.supplier_company_data[i-1][j])
+                    lblTemp.grid(row=i, column=j, sticky='EW')
+
+#Add a supplier company to the database
+class AddSupplierPage(Page):
+    def __init__(self, root, *args, **kwargs):
+       Page.__init__(self, root, *args, **kwargs)
+       # Exit button
+       exit_icon = load_image("/GUI_images/exit.png", 30)
+       btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.SUPPLIER_MANAGEMENT), width=38)
+       btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+
+       lbl_placeholder = ctk.CTkLabel(self, text="Add Supplier")
+       lbl_placeholder.pack(pady=(50,0))
+       ent_companyName = ctk.CTkEntry(master=self, width=300, placeholder_text="Company Name")
+       ent_companyName.pack(pady=10)  
+       ent_companyItems = ctk.CTkEntry(master=self, width=900,placeholder_text="Item(s)")
+       ent_companyItems.pack(pady=10)
+       btn_confirm = ctk.CTkButton(master=self, text="Confirm", command=lambda: ([self.root.CreateNewSupplier(ent_companyName.get(),ent_companyItems.get()),
+                                                                             ent_companyName.delete(0,"end"),
+                                                                             ent_companyItems.delete(0,"end")]))
+
+       btn_confirm.pack(pady=10)  
+
+#Add an item to supplier company in the database
+class AddItemPage(Page):
+    def __init__(self, root, *args, **kwargs):
+       Page.__init__(self, root, *args, **kwargs)
+       # Exit button
+       exit_icon = load_image("/GUI_images/exit.png", 30)
+       btn_exit = ctk.CTkButton(master=self, image=exit_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.SUPPLIER_MANAGEMENT), width=38)
+                                                                                    
+       btn_exit.pack(side=ctk.TOP, anchor=ctk.NW, pady=10, padx=10)
+
+       lbl_placeholder = ctk.CTkLabel(self, text="Add Item")
+       lbl_placeholder.pack(pady=(50,0))
+       ent_companyName = ctk.CTkEntry(master=self, width=300, placeholder_text="Company Name")
+       ent_companyName.pack(pady=10)  
+       ent_companyItems = ctk.CTkEntry(master=self, width=900,placeholder_text="Item(s) to Add")
+       ent_companyItems.pack(pady=10)
+       btn_confirm = ctk.CTkButton(master=self, text="Confirm", command=lambda: ([self.root.AddSupplierItem(ent_companyName.get(),ent_companyItems.get()),
+                                                                             ent_companyName.delete(0,"end"),
+                                                                             ent_companyItems.delete(0,"end")]))
+
+       btn_confirm.pack(pady=10)  
 
 def load_image(path, image_size):
         """ Load image """

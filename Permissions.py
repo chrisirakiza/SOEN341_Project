@@ -25,6 +25,7 @@ class FunctionTypes(Enum):
     ACCESS_USER_MANAGEMENT = 9
     CREATE_QUOTE = 10
     ACCEPT_REJECT = 11
+    ADD_SUPPLIER_ITEM = 12
 
 #################################################################################################
 # Class: Permissions
@@ -52,5 +53,6 @@ class Permissions:
         FunctionTypes.ACCESS_QUOTE_MANAGEMENT: {UT.ADMIN: True, UT.SUPPLIER: True},
         FunctionTypes.ACCESS_SUPPLIER_MANAGEMENT: {UT.ADMIN: True, UT.SUPPLIER: True},
         FunctionTypes.ACCESS_USER_MANAGEMENT: {UT.ADMIN: True, UT.CLIENT: True, UT.MANAGER : True, UT.SUPPLIER: True},
-        FunctionTypes.ACCEPT_REJECT: {UT.MANAGER: True}
+        FunctionTypes.ACCEPT_REJECT: {UT.MANAGER: True},
+        FunctionTypes.ADD_SUPPLIER_ITEM: {UT.ADMIN: True}
     }

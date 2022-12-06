@@ -45,6 +45,8 @@ class ProcSysGUI(ctk.CTk):
         self.pageDict[GUIFrames.PageTypes.PASSWORD_RESET] = GUIFrames.PasswordResetPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.REQUEST_CREATION] = GUIFrames.RequestCreationPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.ASSIGN_MANAGER] = GUIFrames.AssignClientToManagerPage(root=self, master=self)
+        self.pageDict[GUIFrames.PageTypes.CREATE_SUPPLIER_COMPANY] = GUIFrames.AddSupplierPage(root = self, master = self)
+        self.pageDict[GUIFrames.PageTypes.ADD_SUPPLIER_ITEMS] = GUIFrames.AddItemPage(root=self, master=self)
         self.pageDict[GUIFrames.PageTypes.MAIN] = GUIFrames.MainPage(root=self, master=self)
         self.active_page = GUIFrames.PageTypes.MAIN #can be changed for debugging
         self.pageDict[self.active_page].grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
@@ -64,6 +66,7 @@ class ProcSysGUI(ctk.CTk):
         newpage = self.pageDict[pagetype]
         newpage.grid(row=0, column=1, sticky="nswe", padx=20, pady=20)
         newpage.LoadPage()
+      
         self.active_page = pagetype
 
     def Login(self, userID: str, password: str) -> None:
@@ -126,10 +129,9 @@ class ProcSysGUI(ctk.CTk):
         except Exception as e:
             pu.popupError(e)
         
-        
 
     def AssignCliToMana(self, client_ID: str, manager_ID: str) -> None:
-        '''Calls reset password from system and handles error popups'''
+        '''Assigns client to manager and handles error popups'''
         # check if active user has permission
         if(not self.sys.CheckPermissions(perm.ASSIGN_CLI_TO_MANA)):
             pu.popupError("Permission Denied!")
@@ -141,16 +143,56 @@ class ProcSysGUI(ctk.CTk):
         if (manager_ID == ""):
             pu.popupError("Manager ID required")
             return
-        # Call Password Reset from system
         try:
             self.sys.AssignManager(client_ID,manager_ID)
-             # Update user data and restore user management page
-            self.gui_data.UpdateUserData(self.sys)
-            self.DisplayPage(GUIFrames.PageTypes.USER_MANAGEMENT)
-            pu.popupMessage("Success!")
         except Exception as e:
             pu.popupError(e)
        
+    def CreateNewSupplier(self,companyName,companyItems):
+        '''Create a new Supplier Company'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.ADD_SUPPLIER_ITEM)):
+            pu.popupError("Permission Denied!")
+            return
+        # Data validation
+        if (companyName == ""):
+            pu.popupError("Company name required")
+            return
+        if (companyItems == ""):
+            pu.popupError("Items required")
+            return
+        # Call createNewSupplier from system
+        try:
+            self.sys.createNewSupplier(companyName,companyItems)
+            self.gui_data.UpdateSupplierCompanyData(self.sys)
+            self.DisplayPage(GUIFrames.PageTypes.SUPPLIER_MANAGEMENT)
+            pu.popupMessage("Success!")
+        except Exception as e:
+            pu.popupError(e)
+
+    def AddSupplierItem(self,companyName,companyItems):
+        '''Adds an item(s) to an existing Supplier Company'''
+        # check if active user has permission
+        if(not self.sys.CheckPermissions(perm.ADD_SUPPLIER_ITEM)):
+            pu.popupError("Permission Denied!")
+            return
+        # Data validation
+        if (companyName == ""):
+            pu.popupError("Company name required")
+            return
+        if (companyItems == ""):
+            pu.popupError("Items required")
+            return
+        # Call createNewSupplier from system
+        try:
+            self.sys.addItemsToCompany(companyName,companyItems)
+            self.gui_data.UpdateSupplierCompanyData(self.sys)
+            self.DisplayPage(GUIFrames.PageTypes.SUPPLIER_MANAGEMENT)
+            pu.popupMessage("Success!")
+        except Exception as e:
+            pu.popupError(e)
+
+
     def CreateProcRequest(self, item: str, qty: str):
         '''Creates a Procurement Request'''
         # check if active user has permission

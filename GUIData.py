@@ -10,11 +10,14 @@ class GUIData():
             "type": ctk.StringVar()
         }
 
-        # Contains all user data and request data, in the format for the user management and request management/review table
+        # Contains all user data, request data, quote data and suplier company data in the format for 
+        # the user management and request management/review table
+
         self.users_data = []
         self.requests_data = []
         self.quotes_data = []
         self.requests_data_suppliers = []
+        self.supplier_company_data = []
 
     def UpdateUserData(self, sys) -> None:
         '''Update the list of all user data in GUI Data structure'''
@@ -80,15 +83,15 @@ class GUIData():
             # Checks Request Status
             
             status = ctk.StringVar()
-            if (request[5] == 0):
+            if (int(request[5]) == 0):
                 status.set(value="Waiting for Supplier Response")
-            elif (request[5] == 1):
+            elif (int(request[5]) == 1):
                 status.set(value="Approved by System")
-            elif (request[5] == 2):
+            elif (int(request[5]) == 2):
                 status.set(value="Awaiting Manager Response")
-            elif (request[5] == 3):
+            elif (int(request[5]) == 3):
                 status.set(value="Accepted")
-            elif (request[5] == 4):
+            elif (int(request[5]) == 4):
                 status.set(value="Denied")
             else:
                 status.set(value="N/A")
@@ -142,7 +145,8 @@ class GUIData():
     def UpdateRequestDataSuppliers(self, sys) -> None:
         '''Update the list of supplier requests data in GUI Data structure'''
         # Reset request data to blank list
-        self.requests_data_suppliers = []
+        self.requests_data_suppliers.clear()
+        
         # Get list of requests and begin parsing data
         try:
             requestList = sys.database.get_all_requests()
@@ -151,7 +155,9 @@ class GUIData():
         
         for request in requestList:
             # Check that req is Waiting for Supplier Response
-            status = request[5]
+            status = int(request[5])
+            print(request[5])
+            print(status != 0)
             if status != 0:
                 continue
 
@@ -166,4 +172,22 @@ class GUIData():
             # Add request to users data
             request_data = [requestID, itemName, itemQty]
             self.requests_data_suppliers.append(request_data)
-            
+    
+    def UpdateSupplierCompanyData(self,sys):
+        '''Update table of Supplier Company Information'''
+        #Reset supplier company data to blank list
+        self.supplier_company_data = []
+        # Get list of requests and begin parsing data
+        try:
+            companyList = sys.database.get_company_data()
+        except Exception as e:
+            return
+        #parse data
+        for company in companyList:
+            companyName = ctk.StringVar()
+            companyName.set(value = company[0])
+            companyProducts = ctk.StringVar()
+            companyProducts.set(value = company[1])
+        # Add company to company data
+            supplier_company_data = [companyName,companyProducts]
+            self.supplier_company_data.append(supplier_company_data)

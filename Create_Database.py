@@ -12,7 +12,7 @@ class Create_Database:
         self.dbName = dbName
         
     #EXECUTE A QUERY
-        
+
     def execute_query(self, connection, mysql_query, verbose = False):
         cursor = connection.cursor()
         try:
@@ -104,7 +104,8 @@ class Create_Database:
         self.execute_query(connection, query_add_user)
     
     def assign_manager_to_client(self, clientID: str, managerID: str):
-        self.execute_query(connection, """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID))
+        assign_manager_query = """INSERT INTO MANAGER VALUES ('%s', '%s')""" %(clientID, managerID)
+        self.execute_query(connection,assign_manager_query)
 
     #add a new procurement request to the database 
     def add_procurement_request(self, rnum, item, quantity, client_id, manager_id, status):
@@ -135,8 +136,6 @@ class Create_Database:
             raise Exception(f"Request ({procurement_id}) not found in database")
         return request_data[0][6]
         
-
-    
     def get_supplier_requests(self, supplier_ID):
         get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
         get_item = self.read_query(connection, get_item_query)
@@ -171,10 +170,13 @@ class Create_Database:
     def edit_request_status(self, request_id,status):
         get_request_query = """SELECT * FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id) #"UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
         request = self.read_query(connection,get_request_query)
+        print(request)
         if request == []:
             raise Exception (f"Error: request ({request_id}) does not exist in database")
-        edit_request_status_query = """UPDATE PROCUREMENT_REQUEST SET status = '%d' WHERE requestNumber = '%s' """%(status, request_id)
-        self.read_query(connection, edit_request_status_query)
+        # query_update_request = """UPDATE USER SET password = '%s' WHERE userID = '%s'""" %(new_pw,user_ID)
+        edit_request_status_query = """UPDATE PROCUREMENT_REQUEST SET status = '%s' WHERE requestNumber = '%s'"""%(str(status),request_id)
+        print(f"{edit_request_status_query}")
+        self.execute_query(connection, edit_request_status_query)
     #return all quotes in the database
     def get_all_quotes(self):
         query_get_quotes = """SELECT * FROM QUOTE"""
@@ -188,7 +190,7 @@ class Create_Database:
         if quote == []:
             raise Exception (f"Error: quote ({quote_id}) does not exist in database")
         approve_quote_query = """UPDATE PROCUREMENT_REQUEST SET acceptedQuoteID = '%s' WHERE requestNumber = '%s' """%(quote_id, request_id)
-        self.read_query(connection,approve_quote_query)
+        self.execute_query(connection,approve_quote_query)
     #delete all quotes from a certain request
     def delete_all_quotes(self,request_id):
         delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id)
@@ -204,7 +206,20 @@ class Create_Database:
                 delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.quoteID ='%s'"""%(get_quote[i][1])
                 self.read_query(connection,delete_quote_query)
 
+    def add_company(self,companyName):
+        get_company_query = """SELECT * FROM COMPANY WHERE COMPANY.companyName = '%s'"""%(companyName)
+        get_company = self.read_query(connection,get_company_query)
+        if(get_company != []):
+            raise Exception (f"{companyName} already exists in database")
+        add_company_query = """INSERT INTO COMPANY (companyName) VALUES ('%s');"""%(companyName)
+        self.execute_query(connection, add_company_query)
 
+    def get_company_from_name(self,companyName):
+        get_company_query = """SELECT * FROM COMPANY WHERE COMPANY.companyName = '%s'"""%(companyName)
+        get_company = self.read_query(connection,get_company_query)
+        if(get_company == []):
+            raise Exception (f"{companyName} does not exist in database")
+        return get_company
 
     def get_supplier_requests(self, supplier_ID):
         get_item_query = """ SELECT productType FROM COMPANY WHERE COMPANY.supplierID = "%s" """%(supplier_ID)
@@ -220,6 +235,10 @@ class Create_Database:
         get_requests = self.read_query(connection, get_requests_query)
         return get_requests[0][0], get_requests[0][1]
     
+    def add_item(self,companyName,companyItems):
+        add_item_query = """UPDATE COMPANY SET productType = ('%s') WHERE companyName = '%s'"""%(companyItems,companyName)
+        self.execute_query(connection,add_item_query)
+
     def add_new_quote(self, quote_id, request_number, price, supplier_id):
         query_add_quote = """ INSERT INTO QUOTE VALUES (default, "%s", "%s", %f, "%s") """ %(quote_id, request_number, price, supplier_id)
         self.execute_query(connection, query_add_quote)
@@ -229,6 +248,11 @@ class Create_Database:
         query_get_supplier = """ SELECT supplierID FROM COMPANY WHERE %s = COMPANY.productType """ %(itemName)
         supplier_data = DB.read_query(connection, query_get_supplier)
         return  [[i[1]] for i in supplier_data]
+    
+    def get_company_data(self):
+        query_get_company = """ SELECT * FROM COMPANY """
+        company_data = DB.read_query(connection, query_get_company)
+        return [[i[3],i[4]] for i in company_data]
 
 # compare quotes from suppliers and take the lowest offering 
     def compare_quote():
@@ -254,7 +278,7 @@ class Create_Database:
                                             quantity INTEGER,
                                             generatedBy VARCHAR(10) REFERENCES USER(userID),
                                             assignedManager VARCHAR(10) REFERENCES USER(userID),
-                                            status INTEGER,
+                                            status VARCHAR(200),
                                             acceptedQuoteID VARCHAR(10) DEFAULT(NULL),
                                             INDEX(id)
                                             )"""
@@ -263,7 +287,7 @@ class Create_Database:
                                             id INTEGER NOT NULL UNIQUE AUTO_INCREMENT, 
                                             quoteID VARCHAR(10) PRIMARY KEY NOT NULL,
                                             requestID VARCHAR(20),
-                                            price FLOAT(7, 2),
+                                            price FLOAT(9, 2),
                                             supplierID VARCHAR(10) REFERENCES USER(userID),
                                             INDEX(id),
                                             FOREIGN KEY (requestID) REFERENCES PROCUREMENT_REQUEST(requestNumber)
