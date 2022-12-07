@@ -145,6 +145,7 @@ class ProcSysGUI(ctk.CTk):
             return
         try:
             self.sys.AssignManager(client_ID,manager_ID)
+            pu.popupMessage(f"Client {client_ID} assigned to Manager {manager_ID}")
         except Exception as e:
             pu.popupError(e)
        
@@ -229,7 +230,7 @@ class ProcSysGUI(ctk.CTk):
             return
         price = float(price)
         price = round(price, 2)
-        
+
         if (price <= 0) or (price > 9999999):
             pu.popupError("Invalid price")
             return
@@ -237,6 +238,9 @@ class ProcSysGUI(ctk.CTk):
         #reqID, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID
         try:
             # reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(f"{reqID}")
+            reqStatus = self.sys.database.get_request_status(reqID)
+            if(int(reqStatus) != 0):
+                raise Exception (f"Request {reqID} is not assigned to a Supplier")
             quoteID = self.sys.CreateQuote(price, reqID)
             self.gui_data.UpdateQuotesManagerData(self.sys)
             pu.popupMessage(f"Success! Quote {quoteID} has been generated")
@@ -256,8 +260,13 @@ class ProcSysGUI(ctk.CTk):
             reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(reqID)
             if (activeUserID != assignedManagerID):
                 raise Exception(f"Active user is not assigned to request {reqID}")
+            if(int(status) == 0):
+                raise Exception(f"Request {reqID} is awaiting Supplier action")
+            if(int(status) ==1 or int(status) == 3 or int(status) == 4):
+                raise Exception(f"Request {reqID} is already closed")
             self.sys.ManagerAcceptQuote(quoteID)
             self.pageDict[self.active_page].LoadPage()
+            pu.popupMessage(f"Quote {quoteID} for request {reqID} has been accepted")
         except Exception as e:
             pu.popupError(e)
 
@@ -273,8 +282,13 @@ class ProcSysGUI(ctk.CTk):
             reqID_temp, itemName, quantity, generatedByID, assignedManagerID, status, acceptedQuoteID = self.sys.database.get_request(reqID)
             if (activeUserID != assignedManagerID):
                 raise Exception(f"Active user is not assigned to request {reqID}")
+            if(int(status) == 0):
+                raise Exception(f"Request {reqID} is awaiting Supplier action")
+            if(int(status) ==1 or int(status) == 3 or int(status) == 4):
+                raise Exception(f"Request {reqID} is already closed")
             self.sys.ManagerDenyRequest(reqID)
             self.pageDict[self.active_page].LoadPage()
+            pu.popupMessage(f"Request {reqID} has been rejected")
         except Exception as e:
             pu.popupError(e)
 

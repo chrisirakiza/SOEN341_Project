@@ -170,12 +170,10 @@ class Create_Database:
     def edit_request_status(self, request_id,status):
         get_request_query = """SELECT * FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id) #"UPDATE USER SET password = '%s' WHERE userID = '%s'" %(new_pw,user_ID)
         request = self.read_query(connection,get_request_query)
-        print(request)
         if request == []:
             raise Exception (f"Error: request ({request_id}) does not exist in database")
         # query_update_request = """UPDATE USER SET password = '%s' WHERE userID = '%s'""" %(new_pw,user_ID)
         edit_request_status_query = """UPDATE PROCUREMENT_REQUEST SET status = '%s' WHERE requestNumber = '%s'"""%(str(status),request_id)
-        print(f"{edit_request_status_query}")
         self.execute_query(connection, edit_request_status_query)
     #return all quotes in the database
     def get_all_quotes(self):
@@ -204,7 +202,7 @@ class Create_Database:
         for i,quote in enumerate(get_quote):
             if (get_quote[i][1]!=quote_id):
                 delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.quoteID ='%s'"""%(get_quote[i][1])
-                self.read_query(connection,delete_quote_query)
+                self.execute_query(connection,delete_quote_query)
 
     def add_company(self,companyName):
         get_company_query = """SELECT * FROM COMPANY WHERE COMPANY.companyName = '%s'"""%(companyName)

@@ -132,11 +132,13 @@ class ProcurementSystem:
         quote_id = f"Q" + f"{quote_id_counter + 1}".zfill(4)
 
         # fetch the item name and quantity to give it a price
-        # if the request number matches then get item name and quantity. 
+        # if the request number matches then get item name and quantity.
         self.database.add_new_quote(quote_id, requestNumber, Price, self.active_user)
         #check if the price is less than 5000, auto-approve if it is 
         if (Price<5000.00):
             self.AutoAcceptQuote(quote_id)
+        else: #sends quote to manager for approval
+            self.database.edit_request_status(requestNumber,status.SENT_TO_MANAGER.value)
         return quote_id
 
     #automatically accept a quote by setting the status to "auto accepted", add the quoteID to the approvedQuoteID
