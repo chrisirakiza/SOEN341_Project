@@ -67,7 +67,7 @@ class NavBar_UserBox(Page):
 
         # Login button
         user_icon = load_image("/GUI_images/user-icon.png", 30)
-        btn_user = ctk.CTkButton(master = self, image=user_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.LOGIN), width=40, height=40)
+        btn_user = ctk.CTkButton(master=self, image=user_icon, text="", command=lambda: self.root.DisplayPage(PageTypes.LOGIN), width=40, height=40)
         btn_user.grid(row=0, column=0)
         
         lbl_username = ctk.CTkLabel(self, textvariable=self.root.gui_data.active_user_data["name"])
