@@ -29,7 +29,7 @@ class ProcurementSystem:
         self.database = db.Create_Database('localhost', 'root', mysql_password, 'SOEN341')
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
-        #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
+        #admin_user = Users.Admin('admin', 'admin') #creates an admin account on system initialization
         #self.userDB.AddUser(admin_user)
         self.active_user = 'A0001' #admin_user
     
@@ -131,7 +131,7 @@ class ProcurementSystem:
         quote_id_counter = self.database.get_counter_value("QUOTE")
         quote_id = f"Q" + f"{quote_id_counter + 1}".zfill(4)
         self.database.add_new_quote(quote_id, requestNumber, Price, self.active_user)
-        #check if the price is less than 5000, auto-approve if it is 
+        #check if the price is less than 5000, auto-approve if the price is less that 5000$ 
         if (Price<5000.00):
             self.AutoAcceptQuote(quote_id)
         else: #sends quote to manager for approval
