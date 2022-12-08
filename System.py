@@ -17,19 +17,19 @@ import sys
 #           CheckPermissions() - Verifies if a given active user is authorized to execute a given function/command
 # 
 # This class instantiates the Procurement System. There is only a single instance of the ProcurementSystem, which is
-# initialized during system deployement. The ProcurementSystem performs the functional logic of the software. The ProcurementSystem
+# initialized during system deployment. The ProcurementSystem performs the functional logic of the software. The ProcurementSystem
 # also generates the databases required for the software.
 #
 # 
 #################################################################################################
 
+
 class ProcurementSystem:
     def __init__(self) -> None:
-        mysql_password = sys.argv[1]
-        self.database = db.Create_Database('localhost', 'root', mysql_password, 'SOEN341')
+        self.database = db.Create_Database('localhost', 'root', db.mysql_password, "SOEN341")
         self.connection = self.database.connect_to_database()
         #self.userDB = Database.UserDatabase() #initialize the user database
-        #admin_user = Users.Admin('admin', 'admin') #cretes an admin account on system initialization
+        #admin_user = Users.Admin('admin', 'admin') #creates an admin account on system initialization
         #self.userDB.AddUser(admin_user)
         self.active_user = 'A0001' #admin_user
     
@@ -84,25 +84,13 @@ class ProcurementSystem:
     #create Procurement Request
     def CreateRequest(self,client_id, item, quantity):
         request_counter = self.database.get_counter_value("PROCUREMENT_REQUEST")
-        reqNum = f"R" + f"{request_counter + 1}".zfill(6)
+        reqNum = f"22" + f"{request_counter + 1}".zfill(6)
         stat = status.SENT_TO_SUPPLIER
         managerID = self.database.get_manager_from_client(client_id)
         self.database.add_procurement_request(reqNum, item, quantity, client_id, managerID, stat)
+        
         return reqNum
-        
-    #access the database to get request status
-    def displayStatus(self,request_id):
-        return self.database.get_request_status(request_id)
-
-    #display all procurement request info given request ID
-
-    def displayRequest(self,request_id):
-        return self.database.get_procurement_request(request_id)
-
-    def ResetPassword(self,user_id,new_pw):
-        u_ID = self.database.get_user(user_id)[1]
-        self.database.assign_new_password(u_ID,new_pw)
-        
+    
     def supplier_functionality(self):
         if(Users.UserType.ParseUserType(self.active_user) != Users.UserType.SUPPLIER):
             supplier_requests = self.database.get_supplier_requests(self.active_user)
@@ -110,56 +98,16 @@ class ProcurementSystem:
             temp = [[supplier_requests[i][1], supplier_requests[i][2], supplier_requests[i][3], supplier_requests[i][4], supplier_requests[i][5]] for i in supplier_requests]
             print(temp)
 
-    def createNewSupplier(self,companyName,companyItems):
-        self.database.add_company(companyName)
-        self.addItemsToCompany(companyName,companyItems)
-       
-        
-    def addItemsToCompany(self,companyName,companyItems):
-        company = self.database.get_company_from_name(companyName)
-        existingItems = str(company[0][4])
-        if(str(company[0][4]) == 'None'):
-            newItems = companyItems
-        else:
-            temp = existingItems + ","
-            newItems = temp + companyItems
-        self.database.add_item(companyName,newItems)
-
+    
     # supplier defines the quote for a given request
-    def CreateQuote(self, Price, requestNumber) -> str:
+    def CreateQuote(self,Price , requestNumber):
         # Create quote ID ( use the same as userID logic)
         quote_id_counter = self.database.get_counter_value("QUOTE")
-        quote_id = f"Q" + f"{quote_id_counter + 1}".zfill(4)
-
+        quote_id = f"{type.name[0]}" + f"{quote_id_counter + 1}".zfill(4)
         # fetch the item name and quantity to give it a price
-        # if the request number matches then get item name and quantity.
-        self.database.add_new_quote(quote_id, requestNumber, Price, self.active_user)
-        #check if the price is less than 5000, auto-approve if it is 
-        if (Price<5000.00):
-            self.AutoAcceptQuote(quote_id)
-        else: #sends quote to manager for approval
-            self.database.edit_request_status(requestNumber,status.SENT_TO_MANAGER.value)
-        return quote_id
-
-    #automatically accept a quote by setting the status to "auto accepted", add the quoteID to the approvedQuoteID
-    #and delete all other quotes for the given request
-    def AutoAcceptQuote(self, quote_id):
-        requestID = self.database.get_request_id_from_quote(quote_id)
-        self.database.edit_request_status(requestID, status.AUTOMATICALLY_APPROVED.value)
-        self.database.quote_approved(quote_id,requestID)
-        self.database.delete_all_other_quotes(requestID,quote_id)
-
-
-    #given the quoteID, accept a procurement request, deleting all other quotes for the request
-    def ManagerAcceptQuote(self, quote_id):
-        requestID = self.database.get_request_id_from_quote(quote_id)
-        print(f"{requestID}")
-        print(f"{status.APPROVED_BY_MANAGER.value}")
-        self.database.edit_request_status(requestID, status.APPROVED_BY_MANAGER.value)
-        self.database.quote_approved(quote_id,requestID)
-        self.database.delete_all_other_quotes(requestID,quote_id)
-    
-    #given the requestID, delete all the quotes associated with it and set the status to "denied"
-    def ManagerDenyRequest(self, request_id):
-        self.database.edit_request_status(request_id, status.DENIED_BY_MANAGER.value)
-        self.database.delete_all_quotes(request_id)
+        # if the request number matches then get item name and quantity. 
+        item_name, quantity = self.database.get_item(self.active_user, requestNumber)
+        self.database.add_new_quote(self, quote_id, requestNumber, Price, self.active_user)
+            
+ 
+        

@@ -311,7 +311,7 @@ class Create_Database:
                                             )"""
 
 
-mysql_password = sys.argv[0]
+mysql_password = sys.argv[1]
 DB = Create_Database('localhost', 'root', mysql_password, "SOEN341")
 connection = DB.connect_to_database()
 
