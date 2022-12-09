@@ -74,7 +74,7 @@ class ProcSysGUI(ctk.CTk):
         try:
             self.sys.SwitchActiveUser(userID, password)
             self.UpdateActiveUser()
-            self.DisplayPage(GUIFrames.PageTypes.PLACEHOLDER)
+            self.DisplayPage(GUIFrames.PageTypes.MAIN)
         except Exception as e:
             pu.popupError(e)
     

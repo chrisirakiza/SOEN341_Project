@@ -156,9 +156,7 @@ class GUIData():
         for request in requestList:
             # Check that req is Waiting for Supplier Response
             status = int(request[5])
-            print(request[5])
-            print(status != 0)
-            if status != 0:
+            if (status != 0) and (status != 2):
                 continue
 
             # Get baseline Request information

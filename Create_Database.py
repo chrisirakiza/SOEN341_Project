@@ -192,7 +192,7 @@ class Create_Database:
     #delete all quotes from a certain request
     def delete_all_quotes(self,request_id):
         delete_quote_query = """DELETE FROM QUOTE WHERE QUOTE.requestID = '%s'"""%(request_id)
-        self.read_query(connection,delete_quote_query)
+        self.execute_query(connection,delete_quote_query)
 
         
     #delete all quotes except the one that's been approved

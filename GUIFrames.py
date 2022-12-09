@@ -171,7 +171,8 @@ class UserManagementPage(Page):
         # Create table frame
         self.frame_table = ctk.CTkFrame(master=self) #frame for listing tables
         self.frame_table.grid(row=1, column=0, sticky="nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(self.table_cols-1, weight=1)
+        for i in range(0, self.table_cols):
+            self.frame_table.columnconfigure(i, weight=1, uniform="column")
         self.frame_table.rowconfigure(self.table_rows-1, weight=1)
         # Create button frame
         self.frame_button = ctk.CTkFrame(master=self, height=10, corner_radius=0) #frame hosting buttons
@@ -310,7 +311,8 @@ class RequestManagementPage(Page):
         self.frame_button.rowconfigure(0,weight = 1)
         self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(self.table_cols-1,weight = 1)
+        for i in range(0, self.table_cols):
+            self.frame_table.columnconfigure(i, weight=1, uniform="column")
         self.frame_table.rowconfigure(self.table_rows-1,weight = 1)
 
        
@@ -346,7 +348,6 @@ class RequestManagementPage(Page):
     def PopulateTable(self):
         '''Populates the table using GUI data from the root'''
         requests_in_database = len(self.root.gui_data.requests_data)
-        print(f"Lenght: {requests_in_database}")
         for i in range(1, self.table_rows):
             if (i > requests_in_database):
                 for j in range (0, self.table_cols):
@@ -396,11 +397,15 @@ class RequestReviewPage(Page):
         #set Parent grid
         frame_bottom = ctk.CTkFrame(master = self, height=100,width=750) 
         frame_bottom.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_bottom.columnconfigure(2,weight = 1)
+        for i in range(0, 2):
+            frame_bottom.columnconfigure(i, weight=1, uniform="column")
+        # frame_bottom.columnconfigure(2,weight = 1)
         frame_bottom.rowconfigure(1,weight = 1)
         self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(self.tableCols - 1, weight = 1)
+        for i in range(0, self.tableCols):
+            self.frame_table.columnconfigure(i, weight=1, uniform="column")
+        # self.frame_table.columnconfigure(self.tableCols - 1, weight = 1)
         self.frame_table.rowconfigure(self.tableRows - 1, weight = 1)
         
         #define filter to show assigned requests
@@ -478,7 +483,9 @@ class QuoteManagementPage(Page):
         frame_bottom.rowconfigure(1,weight = 1)
         self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(self.tableCols - 1, weight = 1)
+        for i in range(0, self.tableCols):
+            self.frame_table.columnconfigure(i, weight=1, uniform="column")
+        # self.frame_table.columnconfigure(self.tableCols - 1, weight = 1)
         self.frame_table.rowconfigure(self.tableRows, weight = 1)
 
         #configure list for drop down list
@@ -504,7 +511,6 @@ class QuoteManagementPage(Page):
     def LoadPage(self):
         super().LoadPage()
         self.root.gui_data.UpdateRequestDataSuppliers(self.root.sys)
-        print(self.root.gui_data.requests_data_suppliers)
         self.PopulateTable()
         
     def PopulateTable(self):
@@ -535,17 +541,21 @@ class SupplierManagementPage(Page):
         # #set Parent grid
         frame_button = ctk.CTkFrame(master = self, height=100,width=750) #frame hosting buttons
         frame_button.grid(row = 2, column = 0, sticky = "nswe", padx=10, pady=10)
-        frame_button.columnconfigure(2,weight = 1)
+        for i in range(0, 2):
+            frame_button.columnconfigure(i, weight=1, uniform="column")
+        # frame_button.columnconfigure(2,weight = 1)
         frame_button.rowconfigure(0,weight = 1)
         self.frame_table = ctk.CTkFrame(master = self) #frame for listing tables
         self.frame_table.grid(row = 1, column = 0, sticky = "nswe", padx=10, pady=10)
-        self.frame_table.columnconfigure(1,weight = 1)
+        for i in range(0, self.tableCols):
+            self.frame_table.columnconfigure(i, weight=1, uniform="column")
+        # self.frame_table.columnconfigure(1,weight = 1)
         self.frame_table.rowconfigure(10,weight = 1)
 
         btn_new_supplier = ctk.CTkButton(master=frame_button, text = "Add New Supplier",command=lambda:self.root.DisplayPage(PageTypes.CREATE_SUPPLIER_COMPANY))
         btn_new_supplier.grid(row = 0, column = 0)
         btn_add_item = ctk.CTkButton(master = frame_button, text = "Add New Item",command=lambda:self.root.DisplayPage(PageTypes.ADD_SUPPLIER_ITEMS))
-        btn_add_item. grid(row = 0, column = 1,sticky = "e")
+        btn_add_item. grid(row = 0, column = 1)
        
         lbl_id = ctk.CTkLabel(master = self.frame_table, text = "Supplier")
         lbl_id.grid(row = 0, column = 0)
